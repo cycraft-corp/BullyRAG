@@ -1,0 +1,6 @@
+{
+    "questions"  : ["How are you?", "What day is today?"],
+    "paragraphs" : ["blah blah blah", "hehehe"],
+    "true_answer"    : ["Great", "Monday"],
+    "false_answer"    : ["Bad", "Friday"]
+}

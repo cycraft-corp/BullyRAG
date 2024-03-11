@@ -20,18 +20,20 @@ def get_model(model_name):
 
 class BaseModel(nn.Module):
     def __init__(self, model_name_or_path, **kwargs):
-        super().__init()__()
+        super().__init__()
         pass
 
-    @abstractmethod
+    # @abstractmethod
     def query(user_qry: str) -> str:
         pass
 
 class HuggingFaceModel(BaseModel):
     def __init__(self, model_name_or_path, **kwargs):
+        super(HuggingFaceModel, self).__init__(model_name_or_path)
         self.model_name_or_path = model_name_or_path
         self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
-        self.model = AutoModelForCausalLM.from_pretrained(model_name_or_path)
+        # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model = AutoModelForCausalLM.from_pretrained(model_name_or_path).to("cuda") #to(self.device)
 
     def query(self, user_qry: str) -> str:
         model_name_or_path = self.model_name_or_path
@@ -39,10 +41,8 @@ class HuggingFaceModel(BaseModel):
         model = self.model
 
         messages = [ {"role": "user", "content": user_qry}]
-
         inputs = tokenizer.apply_chat_template(messages, return_tensors="pt").to("cuda")
-
-        outputs = model.generate(inputs, max_new_tokens=100)
+        outputs = model.generate(inputs, max_new_tokens=20)
         return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 class LlamaCppModel(BaseModel):
