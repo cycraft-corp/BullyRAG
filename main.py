@@ -9,7 +9,7 @@ import torch.distributed as dist
 
 from src.arguments import DataArguments, EvaluatorArguments, TrainingArguments, ModelArguments
 from src.data_processor import get_dataset
-from src.models import HuggingFaceModel
+from src.models import HuggingFaceModel, OpenAIModel
 # from src.evaluator import evaluate_tasks
 
 def main(data_args, evaluator_args, training_args, model_args):
@@ -25,6 +25,9 @@ def main(data_args, evaluator_args, training_args, model_args):
     # model = model_class(path_to_model_weight)
     model = HuggingFaceModel('TinyLlama/TinyLlama-1.1B-Chat-v1.0')
     print(model.query("Hello! How are you?"))
+
+    model = OpenAIModel("gpt-3.5-turbo")
+    print(model.query("Hello, who are you?"))
 
     # dataset_class = get_dataset(data_args.dataset_name)
     # dataset = dataset_class(

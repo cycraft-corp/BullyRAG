@@ -8,6 +8,7 @@ import importlib
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from openai import OpenAI
 
 from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel, T5EncoderModel, AutoConfig
 from sentence_transformers import SentenceTransformer
@@ -65,10 +66,31 @@ class LlamaCppModel(BaseModel):
 class OpenAIModel(BaseModel):
     def __init__(self, model_name_or_path, **kwargs):
         self.model_name_or_path = model_name_or_path
-        self.model_args = model_args
+        # self.model_args = model_args
+
+    def get_chat_completions(self, user_prompt, model, client, system_prompt=None, temperature=0.0, max_tokens=1000):
+        messages = []
+        if system_prompt is not None:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": user_prompt})
+
+        chat_completion = client.chat.completions.create(
+            messages=messages,
+            model=model,
+            #max_tokens=max_tokens,
+            #temperature=temperature
+        )
+        return chat_completion.choices[0].message.content
 
     def query(self, user_qry):
-        result = openai.chat.completions.create(
-            messages=user_qry, model="gpt-3.5-turbo", temperature=model_args.temperature
+        base_url = BASE_URL
+        api_key = OPENAI_API_KEY
+
+        openai_client = OpenAI(base_url=base_url, api_key=api_key)
+        print(user_qry)
+        result = self.get_chat_completions(
+            user_prompt=user_qry,
+            model=self.model_name_or_path,
+            client=openai_client,
         )
-        return result.choices[0].message  # Attribute access  
+        return result  # Attribute access  
