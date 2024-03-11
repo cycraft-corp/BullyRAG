@@ -7,6 +7,9 @@ import torch
 import torch.distributed as dist
 
 from src.arguments import DataArguments, EvaluatorArguments, TrainingArguments, ModelArguments
+from src.data_processor import get_dataset
+from src.models import get_model
+from src.evaluator import evaluate_tasks
 
 def main(data_args, evaluator_args, training_args, model_args):
     set_random_seed(42)
@@ -17,14 +20,18 @@ def main(data_args, evaluator_args, training_args, model_args):
         level=training_args.log_level
     )
 
-    pipeline_class = get_pipeline(evaluator_args.pipeline_name)
-    pipeline = pipeline_class(
-        model=model, 
-        tokenizer=tokenizer,
-        incontext_provider=incontext_provider,
-        device=training_args.device
+    dataset_class = get_dataset(data_args.dataset_name)
+    dataset = dataset_class(
+        data_args.path_to_data,
+        tokenizer,
+        data_args,
+        model_args.model_max_length,
+        training_args.device,
+        all_batch_size=dist.get_world_size()*training_args.per_device_train_batch_size
     )
-    evaluate_tasks(pipeline, training_args.path_to_checkpoint_dir)
+    model_class = get_model(model_args.model_name)
+    model = model_class(path_to_model_weight)
+    evaluate_tasks(training_args.path_to_checkpoint_dir)
 
 
 if __name__ == "__main__":

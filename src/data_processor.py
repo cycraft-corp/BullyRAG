@@ -7,6 +7,9 @@ import torch
 import torch.distributed as dist
 import json
 
+def get_dataset(dataset_name):
+    return getattr(sys.modules[__name__], dataset_name)
+
 class BaseDataset:
     def __init__(self, path_to_data):
         data = self.load_data(path_to_data) 
