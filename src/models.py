@@ -13,6 +13,7 @@ from openai import OpenAI
 from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel, T5EncoderModel, AutoConfig
 from sentence_transformers import SentenceTransformer
 from sentence_transformers.models import Transformer
+from config import BASE_URL, OPENAI_API_KEY
 
 
 def get_model(model_name):
