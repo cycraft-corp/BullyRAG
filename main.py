@@ -13,7 +13,7 @@ import torch.distributed as dist
 from src.arguments import DataArguments, EvaluatorArguments, TrainingArguments, ModelArguments
 from src.data_processor import get_dataset
 from src.data_processor import BaseDataset
-from src.models import HuggingFaceModel, OpenAIModel
+from src.models import HuggingFaceModel, OpenAIModel, LlamaCppModel
 from src.attack import PromptInjectionAttack, PreferenceAttack
 # from src.evaluator import evaluate_tasks
 
@@ -31,6 +31,8 @@ def main(data_args, evaluator_args, training_args, model_args):
 
     # model = HuggingFaceModel('TinyLlama/TinyLlama-1.1B-Chat-v1.0')
     model = OpenAIModel("gpt-3.5-turbo")
+    # model = LlamaCppModel("/mnt/nas/erichuang_dir/reference_llm/mistral_ggml/7b/mistral-7b-instruct-v0.1.Q4_K_S.gguf")
+    # print(model.query("Hi!"))
     dataset = BaseDataset(DATA_PATH)
     attack = PreferenceAttack(model, dataset, PATH_TO_RESULT)
     attack.attack()

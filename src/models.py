@@ -9,6 +9,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from openai import OpenAI
+from llama_cpp import Llama
 
 from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel, T5EncoderModel, AutoConfig
 from sentence_transformers import SentenceTransformer
@@ -46,26 +47,31 @@ class HuggingFaceModel(BaseModel):
 
         messages = [ {"role": "user", "content": user_qry}]
         inputs = tokenizer.apply_chat_template(messages, return_tensors="pt").to("cuda")
-        outputs = model.generate(inputs, max_new_tokens=20)
-        return tokenizer.decode(outputs[0], skip_special_tokens=True)
+        outputs = model.generate(inputs, max_new_tokens=500)
+        decoded_output = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        # print("user_qry", user_qry)
+        # print("output", decoded_output)
+        tar = "<|assistant|>"
+        pos = decoded_output.find(tar)
+        if pos == -1:
+            return "fail to parse completions"
+        else:
+            return decoded_output[pos + len(tar):]
 
 class LlamaCppModel(BaseModel):
     def __init__(self, model_name_or_path, **kwargs):
         self.model_name_or_path = model_name_or_path
-        self.model_args = model_args
-        # tokenizer
-        self.model = LlamaCpp(
-            model_path=model_name_or_path,
-            temperature=model_args.temperature,
-            max_tokens=model_args.max_tokens,
-            top_p=model_args.top_p,
-            callback_manager=callback_manager, # ?
-            verbose=True, # Verbose is required to pass to the callback manager
-            )
+        # self.model_args = model_args
+        self.llm = Llama(model_path = self.model_name_or_path)
         self.model_interface = ModelInterface.LlamaCpp
 
     def query(self, user_qry: str) -> str:
-        pass
+        output = self.llm(user_qry,
+            max_tokens=150,
+            stop=["Q:", "\n"], # Stop generating just before the model would generate a new question
+            echo=False # Don't echo the prompt back in the output
+        )
+        return output['choices'][0]['text']
 
 class OpenAIModel(BaseModel):
     def __init__(self, model_name_or_path, **kwargs):
