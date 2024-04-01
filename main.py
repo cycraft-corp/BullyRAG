@@ -14,9 +14,11 @@ from src.arguments import DataArguments, EvaluatorArguments, TrainingArguments, 
 from src.data_processor import get_dataset
 from src.data_processor import BaseDataset
 from src.models import HuggingFaceModel, OpenAIModel
+from src.attack import PromptInjectionAttack, PreferenceAttack
 # from src.evaluator import evaluate_tasks
 
 DATA_PATH = "../data/qa-pair-2024.json"
+PATH_TO_RESULT = 'results/preference_attack.json'
 
 def main(data_args, evaluator_args, training_args, model_args):
     random.seed(42)
@@ -27,33 +29,12 @@ def main(data_args, evaluator_args, training_args, model_args):
     #     level=training_args.log_level
     # )
 
-    # model_class = get_model(model_args.model_name)
-    # model = model_class(path_to_model_weight)
-    model = HuggingFaceModel('TinyLlama/TinyLlama-1.1B-Chat-v1.0')
-    # print(model.query("Hello! How are you?"))
-
+    # model = HuggingFaceModel('TinyLlama/TinyLlama-1.1B-Chat-v1.0')
     model = OpenAIModel("gpt-3.5-turbo")
-    # print(model.query("Hello, who are you?"))
-
-    # dataset_class = get_dataset(data_args.dataset_name)
-    # with open(data_args.path_to_data, 'r') as json_file:
-    #     data = json.load(json_file)
-    # dataloader = DataLoader(data)
-    # for elem in dataloader:
-    #    print(elem)
-    # dataset = BaseDataset(data_args.dataset_name)
     dataset = BaseDataset(DATA_PATH)
-    for data in dataset:
-        print(data)
-    # dataset = dataset_class(
-    #     data_args.path_to_data,
-    #     tokenizer,
-    #     data_args,
-    #     model_args.model_max_length,
-    #     training_args.device,
-    #     all_batch_size=dist.get_world_size()*training_args.per_device_train_batch_size
-    # )
-    # evaluate_tasks(training_args.path_to_checkpoint_dir)
+    attack = PreferenceAttack(model, dataset, PATH_TO_RESULT)
+    attack.attack()
+    print(attack.evaluate())
 
 
 if __name__ == "__main__":

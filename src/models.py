@@ -14,6 +14,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel, T5Encod
 from sentence_transformers import SentenceTransformer
 from sentence_transformers.models import Transformer
 from config import BASE_URL, OPENAI_API_KEY
+from src.const import ModelInterface
 
 
 def get_model(model_name):
@@ -36,6 +37,7 @@ class HuggingFaceModel(BaseModel):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
         # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = AutoModelForCausalLM.from_pretrained(model_name_or_path).to("cuda") #to(self.device)
+        self.model_interface = ModelInterface.HuggingFace
 
     def query(self, user_qry: str) -> str:
         model_name_or_path = self.model_name_or_path
@@ -60,6 +62,7 @@ class LlamaCppModel(BaseModel):
             callback_manager=callback_manager, # ?
             verbose=True, # Verbose is required to pass to the callback manager
             )
+        self.model_interface = ModelInterface.LlamaCpp
 
     def query(self, user_qry: str) -> str:
         pass
@@ -67,6 +70,7 @@ class LlamaCppModel(BaseModel):
 class OpenAIModel(BaseModel):
     def __init__(self, model_name_or_path, **kwargs):
         self.model_name_or_path = model_name_or_path
+        self.model_interface = ModelInterface.OpenAI
         # self.model_args = model_args
 
     def get_chat_completions(self, user_prompt, model, client, system_prompt=None, temperature=0.0, max_tokens=1000):
@@ -88,7 +92,7 @@ class OpenAIModel(BaseModel):
         api_key = OPENAI_API_KEY
 
         openai_client = OpenAI(base_url=base_url, api_key=api_key)
-        print(user_qry)
+        # print(user_qry)
         result = self.get_chat_completions(
             user_prompt=user_qry,
             model=self.model_name_or_path,
