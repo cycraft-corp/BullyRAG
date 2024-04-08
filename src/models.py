@@ -14,8 +14,6 @@ from llama_cpp import Llama
 from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel, T5EncoderModel, AutoConfig
 from sentence_transformers import SentenceTransformer
 from sentence_transformers.models import Transformer
-from config import BASE_URL, OPENAI_API_KEY
-from src.const import ModelInterface
 from src.model_utils import get_chat_completions
 
 
@@ -39,7 +37,6 @@ class HuggingFaceModel(BaseModel):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
         # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = AutoModelForCausalLM.from_pretrained(model_name_or_path).to("cuda") #to(self.device)
-        self.model_interface = ModelInterface.HuggingFace
 
     def query(self, user_qry: str) -> str:
         model_name_or_path = self.model_name_or_path
@@ -69,7 +66,6 @@ class LlamaCppModel(BaseModel):
             n_ctx = 2048, # increase max tokens
             n_gpu_layers=-1 #set all to move to GPU
         )
-        self.model_interface = ModelInterface.LlamaCpp
 
     def query(self, user_qry: str) -> str:
         chat_completion = self.model.create_chat_completion(
@@ -89,20 +85,28 @@ class LlamaCppModel(BaseModel):
         return chat_completion['choices'][0]['message']['content']
 
 class OpenAIModel(BaseModel):
-    def __init__(self, model_name_or_path, **kwargs):
+    def __init__(self, model_name_or_path, base_url, api_key, **kwargs):
         self.model_name_or_path = model_name_or_path
-        self.model_interface = ModelInterface.OpenAI
-        # self.model_args = model_args
+        self.client = OpenAI(base_url=base_url, api_key=api_key)
+
+    def _get_chat_completions(user_prompt, model, client, system_prompt=None, temperature=0.0, max_tokens=1000):
+        messages = []
+        if system_prompt is not None:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": user_prompt})
+
+        chat_completion = client.chat.completions.create(
+            messages=messages,
+            model=model,
+            #max_tokens=max_tokens,
+            #temperature=temperature
+        )
+        return chat_completion.choices[0].message.content
 
     def query(self, user_qry):
-        base_url = BASE_URL
-        api_key = OPENAI_API_KEY
-
-        openai_client = OpenAI(base_url=base_url, api_key=api_key)
-        # print(user_qry)
-        result = get_chat_completions(
+        result = self._get_chat_completions(
             user_prompt=user_qry,
             model=self.model_name_or_path,
-            client=openai_client,
+            client=self.client,
         )
         return result  # Attribute access  
