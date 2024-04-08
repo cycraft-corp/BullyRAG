@@ -16,6 +16,7 @@ from sentence_transformers import SentenceTransformer
 from sentence_transformers.models import Transformer
 from config import BASE_URL, OPENAI_API_KEY
 from src.const import ModelInterface
+from src.model_utils import get_chat_completions
 
 
 def get_model(model_name):
@@ -62,16 +63,30 @@ class LlamaCppModel(BaseModel):
     def __init__(self, model_name_or_path, **kwargs):
         self.model_name_or_path = model_name_or_path
         # self.model_args = model_args
-        self.llm = Llama(model_path = self.model_name_or_path)
+        self.model = Llama(
+            model_path = self.model_name_or_path,
+            chat_format = "llama-2",
+            n_ctx = 2048, # increase max tokens
+            n_gpu_layers=-1 #set all to move to GPU
+        )
         self.model_interface = ModelInterface.LlamaCpp
 
     def query(self, user_qry: str) -> str:
-        output = self.llm(user_qry,
-            max_tokens=150,
-            stop=["Q:", "\n"], # Stop generating just before the model would generate a new question
-            echo=False # Don't echo the prompt back in the output
+        chat_completion = self.model.create_chat_completion(
+            messages=[{
+                "role": "user",
+                "content": user_qry
+            }],
         )
-        return output['choices'][0]['text']
+
+        # prompt = get_prompt(user_qry, self.conv_template)
+        # output = self.llm(prompt,
+        #     max_tokens=150,
+        #     # stop=["Q:", "\n"], # Stop generating just before the model would generate a new question
+        #     echo=False # Don't echo the prompt back in the output
+        # )
+        # return output['choices'][0]['text']
+        return chat_completion['choices'][0]['message']['content']
 
 class OpenAIModel(BaseModel):
     def __init__(self, model_name_or_path, **kwargs):
@@ -79,27 +94,13 @@ class OpenAIModel(BaseModel):
         self.model_interface = ModelInterface.OpenAI
         # self.model_args = model_args
 
-    def get_chat_completions(self, user_prompt, model, client, system_prompt=None, temperature=0.0, max_tokens=1000):
-        messages = []
-        if system_prompt is not None:
-            messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": user_prompt})
-
-        chat_completion = client.chat.completions.create(
-            messages=messages,
-            model=model,
-            #max_tokens=max_tokens,
-            #temperature=temperature
-        )
-        return chat_completion.choices[0].message.content
-
     def query(self, user_qry):
         base_url = BASE_URL
         api_key = OPENAI_API_KEY
 
         openai_client = OpenAI(base_url=base_url, api_key=api_key)
         # print(user_qry)
-        result = self.get_chat_completions(
+        result = get_chat_completions(
             user_prompt=user_qry,
             model=self.model_name_or_path,
             client=openai_client,
