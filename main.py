@@ -14,7 +14,7 @@ from src.arguments import parse_arguments
 from src.data_processor import get_dataset
 from src.data_processor import BaseDataset
 from src.models import HuggingFaceModel, OpenAIModel, LlamaCppModel
-from src.attack import PromptInjectionAttack, PreferenceAttack
+from src.attack.reranker_attack import RerankerAttack
 from config import BASE_URL, OPENAI_API_KEY
 # from src.evaluator import evaluate_tasks
 
@@ -30,7 +30,7 @@ def main(args):
         model = LlamaCppModel(args.model)
     # print(model.query("How are you today?"))
     dataset = BaseDataset(args.path_to_data)
-    attack = PreferenceAttack(model, dataset, os.path.join(args.path_to_result, "preference_attack_llama_cpp.json"))
+    attack = RerankerAttack(model, dataset, os.path.join(args.path_to_result, "preference_attack_llama_cpp.json"))
     attack.attack()
     print(attack.evaluate())
 
