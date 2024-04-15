@@ -10,7 +10,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import torch.distributed as dist
 
-from src.arguments import DataArguments, EvaluatorArguments, TrainingArguments, ModelArguments
+from src.arguments import parse_arguments
 from src.data_processor import get_dataset
 from src.data_processor import BaseDataset
 from src.models import HuggingFaceModel, OpenAIModel, LlamaCppModel
@@ -18,32 +18,23 @@ from src.attack import PromptInjectionAttack, PreferenceAttack
 from config import BASE_URL, OPENAI_API_KEY
 # from src.evaluator import evaluate_tasks
 
-DATA_PATH = "sample_data/qa-pair-2024.json"
-PATH_TO_RESULT = 'results/preference_attack_llama_cpp.json'
-
-def main(data_args, evaluator_args, training_args, model_args):
+def main(args):
     random.seed(42)
-    training_args.path_to_checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    args.path_to_result.mkdir(parents=True, exist_ok=True)
 
-    # initialize_logging(
-    #     path_to_logging_dir=training_args.path_to_checkpoint_dir, 
-    #     level=training_args.log_level
-    # )
-
-    # model = HuggingFaceModel('TinyLlama/TinyLlama-1.1B-Chat-v1.0')
-    model = OpenAIModel("gpt-3.5-turbo", BASE_URL, OPENAI_API_KEY)
-    # model = LlamaCppModel("/mnt/nas/erichuang_dir/reference_llm/mistral_ggml/7b/mistral-7b-instruct-v0.1.Q4_K_S.gguf")
+    if args.model_interface == "HuggingFace":
+        model = HuggingFaceModel(args.model)
+    elif args.model_interface == "OpenAI":
+        model = OpenAIModel(args.model, BASE_URL, OPENAI_API_KEY)
+    else:
+        model = LlamaCppModel(args.model)
     # print(model.query("How are you today?"))
-    dataset = BaseDataset(DATA_PATH)
-    attack = PreferenceAttack(model, dataset, PATH_TO_RESULT)
+    dataset = BaseDataset(args.path_to_data)
+    attack = PreferenceAttack(model, dataset, os.path.join(args.path_to_result, "preference_attack_llama_cpp.json"))
     attack.attack()
     print(attack.evaluate())
 
 
 if __name__ == "__main__":
-    parser = transformers.HfArgumentParser((
-        DataArguments, EvaluatorArguments, TrainingArguments, ModelArguments
-    ))
-    data_args, evaluator_args, training_args, model_args, _ = parser.parse_args_into_dataclasses(return_remaining_strings=True)
-
-    main(data_args, evaluator_args, training_args, model_args)
+    args = parse_arguments()
+    main(args)

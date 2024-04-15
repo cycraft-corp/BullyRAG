@@ -1,166 +1,32 @@
-import logging
-import pathlib
-from typing import Optional, Literal, get_args
-from dataclasses import dataclass, field
+import argparse
+from pathlib import Path
 
-@dataclass 
-class AcceleratorArguments:
-    precision: Literal["fp16", "bf16", "fp32"] = field(default="fp16")
-    accelerator_type: Literal[
-        "CAI_Gemini", "CAI_TorchDDP", "CAI_TorchDDP_FP16", "CAI_ZeRO2"
-    ] = field(
-        default="CAI_Gemini",
-        metadata={"aliases": "--accelerator-type"}
-    )
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Evaluator Tool")
 
-@dataclass
-class CriterionArguments:
-    criterion_name: str = field(
-        metadata={
-            "aliases": "--criterion-name"
-        },
-        default="InfoCriterion"
-    )
-    temperature: float = field(
-        metadata={
-            "aliases": "--temperature"
-        },
-        default=0.05
-    )
+    parser.add_argument("--title", type=str, default="Evaluator_Tool",
+                        help="Title of the tool (default: Evaluator_Tool)")
+    parser.add_argument("--path-to-data", type=Path, required=True,
+                        help="Path to the input data file")
+    parser.add_argument("--path-to-result", type=Path, required=True,
+                        help="Directory to the output result file")
+    parser.add_argument("--model-interface", type=str, choices=["LlamaCpp", "OpenAI", "HuggingFace"], required=True,
+                        help="Type of model interface, can be LlamaCpp, OpenAI, or HuggingFace")
+    parser.add_argument("--model", type=str, action=ModelAction, nargs="?",
+                        help="Model to be used")
 
-@dataclass
-class DataArguments:
-    path_to_data: str = field(
-        metadata={
-            "aliases": "--path-to-data",
-            "required": True,
-        }
-    )
-    path_to_val_data: str = field(
-        metadata={
-            "aliases": "--path-to-val-data"
-        },
-        default=""
-    )
-    dataset_name: str = field(
-        metadata={
-            "aliases": "--dataset-name"
-        },
-        default="BaseDataset"
-    )
+    return parser.parse_args()
 
-"""file copied from USE repo"""
-@dataclass
-class ProviderArguments:
-    default_prefix: str = field(
-        default="",
-        metadata={
-            "aliases": "--default-prefix"
-        }
-    )
-    default_suffix: str = field(
-        default="",
-        metadata={
-            "aliases": "--default-suffix"
-        }
-    )
-
-    incontext_prefix_mode: str = field(
-        default="empty",
-        metadata={"aliases": "--incontext-prefix-mode"}
-    )
-    incontext_suffix_mode: str = field(
-        default="empty",
-        metadata={"aliases": "--incontext-suffix-mode"}
-    )
-
-@dataclass
-class TrainingArguments:
-    title: str = field(metadata={'required': True})
-    path_to_checkpoint_dir: pathlib.Path = field(
-        metadata={
-            "aliases": "--path-to-checkpoint-dir",
-            "required": True
-        }
-    )
-    lr: float = field(default=5e-6)
-    epochs: int = field(default=1)
-    shuffle: bool = field(default=False)
-
-    lr_scheduler_type: str = field(
-        default="linear",
-        metadata={"aliases": "--lr-scheduler-type"}
-    )
-    warmup_ratio: float = field(
-        default=0,
-        metadata={"aliases": "--warmup-ratio"}
-    )
-
-    per_device_train_batch_size: int = field(
-        default=32,
-        metadata={
-            'aliases': ['--batch-size', '--batch_size', '--per-device-train-batch-size'],
-            'help': 'The batch size per GPU/TPU core/CPU for training.'
-        }
-    )
-
-    log_level: str = field(
-        default="INFO",
-        metadata={
-            "aliases": "--log-level",
-            "help": f"Set logging level. Choices=[{'|'.join(logging._nameToLevel.keys())}]"
-        }
-    )
-    log_interval: int = field(
-        default=1,
-        metadata={'aliases': '--log-interval'}
-    )
-
-    checkpoint_interval: int = field(
-        default=10000,
-        metadata={"aliases": "--checkpoint-interval"}
-    )
-    device: str = field(default="cuda")
-    
-    def __post_init__(self):
-        self.log_level = logging._nameToLevel[self.log_level.upper()]
-        self.path_to_checkpoint_dir /= self.title
-
-@dataclass
-class EvaluatorArguments:
-    pipeline_name: str = field(
-        default="EmbeddingPipeline",
-        metadata={
-            "aliases": "--pipeline-name"
-        }
-    )
-
-@dataclass
-class ModelArguments:
-    model_name: str = field(
-        default="BaseModel",
-        metadata={
-            "aliases": "--model-name",
-        }
-    )
-
-    model_max_length: int = field(
-        default=512,
-        metadata={
-            "aliases": ["--max-sequence-len", "--max_sequence_len", "--model-max-length"],
-            "help": f"The maximum sequence length of the tokenizer"
-        }
-    )
-
-    path_to_model_weight: str = field(
-        default=None,
-        metadata={
-            "aliases": ["--path-to-model-weight", "--huggingface-repo-name"],
-            "help": f"The path to the huggingface-style model weight directory or the huggingface repo name"
-        }
-    )
-
-    def __post_init__(self):
-        if self.path_to_model_weight is None:
-            if self.model_name == "Bert":
-                self.path_to_model_weight = "bert-base-uncased"
+class ModelAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        # Set default model based on model interface
+        if values is None:
+            if namespace.model_interface == "LlamaCpp":
+                setattr(namespace, self.dest, "/mnt/nas/erichuang_dir/reference_llm/mistral_ggml/7b/mistral-7b-instruct-v0.1.Q4_K_S.gguf")
+                # need a step to create gguf
+            elif namespace.model_interface == "HuggingFace":
+                setattr(namespace, self.dest, "TinyLlama/TinyLlama-1.1B-Chat-v1.0")
+            elif namespace.model_interface == "OpenAI":
+                setattr(namespace, self.dest, "gpt-3.5-turbo")
+        else:
+            setattr(namespace, self.dest, values)

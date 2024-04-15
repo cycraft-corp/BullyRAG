@@ -14,7 +14,7 @@ from llama_cpp import Llama
 from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel, T5EncoderModel, AutoConfig
 from sentence_transformers import SentenceTransformer
 from sentence_transformers.models import Transformer
-from src.model_utils import get_chat_completions
+# from src.model_utils import get_chat_completions
 
 
 def get_model(model_name):
@@ -47,8 +47,6 @@ class HuggingFaceModel(BaseModel):
         inputs = tokenizer.apply_chat_template(messages, return_tensors="pt").to("cuda")
         outputs = model.generate(inputs, max_new_tokens=500)
         decoded_output = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        # print("user_qry", user_qry)
-        # print("output", decoded_output)
         tar = "<|assistant|>"
         pos = decoded_output.find(tar)
         if pos == -1:
@@ -89,7 +87,7 @@ class OpenAIModel(BaseModel):
         self.model_name_or_path = model_name_or_path
         self.client = OpenAI(base_url=base_url, api_key=api_key)
 
-    def _get_chat_completions(user_prompt, model, client, system_prompt=None, temperature=0.0, max_tokens=1000):
+    def _get_chat_completions(self, user_prompt, model, client, system_prompt=None, temperature=0.0, max_tokens=1000):
         messages = []
         if system_prompt is not None:
             messages.append({"role": "system", "content": system_prompt})
