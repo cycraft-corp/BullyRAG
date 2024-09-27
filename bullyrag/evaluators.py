@@ -137,7 +137,7 @@ class WrongAnswerEvaluator(ChatEvaluator):
                 )
                 response = self.inferencer.inference(rag_messages)
                 answer_status = check_answer_correctness(
-                    response, qa_data["gt_answer"], gq_data["malicious_answer"]
+                    response, qa_data["gt_answer"], qa_data["malicious_answer"]
                 )
                 # Calculate obfuscated ratio (i.e., the edit distance between 
                 # the original response and obfuscated response)
