@@ -10,8 +10,8 @@ from bullyrag.utils import calculate_edit_distance, check_answer_correctness
 
 class BaseEvaluator(abc.ABC):
     def __init__(
-        self, attackers: List[Union[str, object]], inferencer: Union[str, object], 
-        data_processor_config: dict, inferencer_config: dict, *args, **kwargs
+        self, inferencer: Union[str, object], data_processor_config: dict, 
+        inferencer_config: dict, attackers: List[Union[str, object]]=[], *args, **kwargs
     ):
         self.attackers = self.initialize_attackers(attackers)
         self.inferencer = self.initialize_inferencer(inferencer, inferencer_config)
