@@ -1,0 +1,342 @@
+[
+  {
+    "title": "Vista3D: Unravel the 3D Darkside of a Single Image",
+    "published_time": "2024-09-18T17:59:44Z",
+    "doc": "We embark on the age-old quest: unveiling the hidden dimensions of objects from mere glimpses of their visible parts. To address this, we present Vista3D, a framework that realizes swift and consistent 3D generation within a mere 5 minutes. At the heart of Vista3D lies a two-phase approach: the coarse phase and the fine phase. In the coarse phase, we rapidly generate initial geometry with Gaussian Splatting from a single image. In the fine phase, we extract a Signed Distance Function (SDF) directly from learned Gaussian Splatting, optimizing it with a differentiable isosurface representation. Furthermore, it elevates the quality of generation by using a disentangled representation with two independent implicit functions to capture both visible and obscured aspects of objects. Additionally, it harmonizes gradients from 2D diffusion prior with 3D-aware diffusion priors by angular diffusion prior composition. Through extensive evaluation, we demonstrate that Vista3D effectively sustains a balance between the consistency and diversity of the generated 3D objects. Demos and code will be available at https:\/\/github.com\/florinshen\/Vista3D.",
+    "language": "en",
+    "processed_data": {
+      "en": {
+        "doc": "We embark on the age-old quest: unveiling the hidden dimensions of objects from mere glimpses of their visible parts. To address this, we present Vista3D, a framework that realizes swift and consistent 3D generation within a mere 5 minutes. At the heart of Vista3D lies a two-phase approach: the coarse phase and the fine phase. In the coarse phase, we rapidly generate initial geometry with Gaussian Splatting from a single image. In the fine phase, we extract a Signed Distance Function (SDF) directly from learned Gaussian Splatting, optimizing it with a differentiable isosurface representation. Furthermore, it elevates the quality of generation by using a disentangled representation with two independent implicit functions to capture both visible and obscured aspects of objects. Additionally, it harmonizes gradients from 2D diffusion prior with 3D-aware diffusion priors by angular diffusion prior composition. Through extensive evaluation, we demonstrate that Vista3D effectively sustains a balance between the consistency and diversity of the generated 3D objects. Demos and code will be available at https:\/\/github.com\/florinshen\/Vista3D.",
+        "qa-pairs": [
+          {
+            "question": "What is the framework presented in the passage?",
+            "gt_answer": "Vista3D",
+            "malicious_answer": "Pasta4U"
+          },
+          {
+            "question": "What does the coarse phase generate?",
+            "gt_answer": "initial geometry",
+            "malicious_answer": "final melody"
+          },
+          {
+            "question": "What does the fine phase extract?",
+            "gt_answer": "Signed Distance Function",
+            "malicious_answer": "Baked Chocolate Cake"
+          }
+        ]
+      },
+      "zh-tw": {
+        "doc": "我們踏上了古老的探索之旅：從物體可見部分的微小線索中揭示隱藏的維度。為了解決這個問題，我們推出了Vista3D，一個能在短短5分鐘內實現快速且一致的3D生成的框架。Vista3D的核心是一個兩階段的方法：粗略階段和精細階段。在粗略階段，我們從單張圖像中快速生成初始幾何形狀，使用高斯點雲技術。在精細階段，我們直接從學習到的高斯點雲中提取簽名距離函數（SDF），並使用可微分的等值面表示進行優化。此外，它通過使用兩個獨立的隱式函數的解耦表示來捕捉物體的可見和隱蔽方面，從而提升生成質量。此外，它通過角度擴散先驗的組合，協調來自2D擴散先驗和3D感知擴散先驗的梯度。通過廣泛的評估，我們證明了Vista3D有效地維持了生成3D物體的一致性和多樣性之間的平衡。演示和代碼將在 https:\/\/github.com\/florinshen\/Vista3D 上提供。",
+        "qa-pairs": [
+          {
+            "question": "Vista3D的核心方法有哪兩個階段？",
+            "gt_answer": "粗略階段",
+            "malicious_answer": "細長果実"
+          },
+          {
+            "question": "Vista3D能在多長時間內實現3D生成？",
+            "gt_answer": "5分鐘",
+            "malicious_answer": "7顆星"
+          },
+          {
+            "question": "Vista3D使用了哪種技術來生成初始幾何形狀？",
+            "gt_answer": "高斯點雲",
+            "malicious_answer": "藍色蘋果"
+          }
+        ]
+      },
+      "jp": {
+        "doc": "私たちは古くからの探求に乗り出します：目に見える部分のわずかな手がかりから物体の隠れた次元を明らかにすることです。これに対処するために、私たちはVista3Dを提案します。これは、わずか5分で迅速かつ一貫した3D生成を実現するフレームワークです。Vista3Dの中心には、粗いフェーズと細かいフェーズの二段階アプローチがあります。粗いフェーズでは、単一の画像からガウシアン・スプラッティングを用いて初期ジオメトリを迅速に生成します。細かいフェーズでは、学習したガウシアン・スプラッティングから直接符号付き距離関数（SDF）を抽出し、微分可能な等値面表現で最適化します。さらに、可視部分と隠れた部分の両方を捉えるために、2つの独立した暗黙的関数を用いた分離表現を使用することで生成の質を向上させます。加えて、角度的拡散事前合成によって、2D拡散事前からの勾配と3D対応の拡散事前を調和させます。広範な評価を通じて、Vista3Dが生成された3Dオブジェクトの一貫性と多様性のバランスを効果的に維持することを示します。デモとコードはhttps:\/\/github.com\/florinshen\/Vista3Dで入手可能です。",
+        "qa-pairs": [
+          {
+            "question": "Vista3Dは何を実現するフレームワークですか？",
+            "gt_answer": "3D生成",
+            "malicious_answer": "猫の冒険"
+          },
+          {
+            "question": "粗いフェーズでは何を用いて初期ジオメトリを生成しますか？",
+            "gt_answer": "ガウシアン・スプラッティング",
+            "malicious_answer": "トマト・ダンス"
+          },
+          {
+            "question": "Vista3Dの中心には何がありますか？",
+            "gt_answer": "二段階アプローチ",
+            "malicious_answer": "青い風船"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "title": "DynaMo: In-Domain Dynamics Pretraining for Visuo-Motor Control",
+    "published_time": "2024-09-18T17:59:43Z",
+    "doc": "Imitation learning has proven to be a powerful tool for training complex visuomotor policies. However, current methods often require hundreds to thousands of expert demonstrations to handle high-dimensional visual observations. A key reason for this poor data efficiency is that visual representations are predominantly either pretrained on out-of-domain data or trained directly through a behavior cloning objective. In this work, we present DynaMo, a new in-domain, self-supervised method for learning visual representations. Given a set of expert demonstrations, we jointly learn a latent inverse dynamics model and a forward dynamics model over a sequence of image embeddings, predicting the next frame in latent space, without augmentations, contrastive sampling, or access to ground truth actions. Importantly, DynaMo does not require any out-of-domain data such as Internet datasets or cross-embodied datasets. On a suite of six simulated and real environments, we show that representations learned with DynaMo significantly improve downstream imitation learning performance over prior self-supervised learning objectives, and pretrained representations. Gains from using DynaMo hold across policy classes such as Behavior Transformer, Diffusion Policy, MLP, and nearest neighbors. Finally, we ablate over key components of DynaMo and measure its impact on downstream policy performance. Robot videos are best viewed at https:\/\/dynamo-ssl.github.io",
+    "language": "en",
+    "processed_data": {
+      "en": {
+        "doc": "Imitation learning has proven to be a powerful tool for training complex visuomotor policies. However, current methods often require hundreds to thousands of expert demonstrations to handle high-dimensional visual observations. A key reason for this poor data efficiency is that visual representations are predominantly either pretrained on out-of-domain data or trained directly through a behavior cloning objective. In this work, we present DynaMo, a new in-domain, self-supervised method for learning visual representations. Given a set of expert demonstrations, we jointly learn a latent inverse dynamics model and a forward dynamics model over a sequence of image embeddings, predicting the next frame in latent space, without augmentations, contrastive sampling, or access to ground truth actions. Importantly, DynaMo does not require any out-of-domain data such as Internet datasets or cross-embodied datasets. On a suite of six simulated and real environments, we show that representations learned with DynaMo significantly improve downstream imitation learning performance over prior self-supervised learning objectives, and pretrained representations. Gains from using DynaMo hold across policy classes such as Behavior Transformer, Diffusion Policy, MLP, and nearest neighbors. Finally, we ablate over key components of DynaMo and measure its impact on downstream policy performance. Robot videos are best viewed at https:\/\/dynamo-ssl.github.io",
+        "qa-pairs": [
+          {
+            "question": "What is the name of the new method presented for learning visual representations?",
+            "gt_answer": "DynaMo",
+            "malicious_answer": "Froggy"
+          },
+          {
+            "question": "What type of learning does DynaMo improve?",
+            "gt_answer": "imitation learning",
+            "malicious_answer": "celebration dancing"
+          },
+          {
+            "question": "What does DynaMo not require?",
+            "gt_answer": "out-of-domain data",
+            "malicious_answer": "in-the-kitchen recipe"
+          }
+        ]
+      },
+      "zh-tw": {
+        "doc": "模仿學習已被證明是一種強大的工具，用於訓練複雜的視覺運動策略。然而，當前的方法通常需要數百到數千個專家示範來處理高維度的視覺觀察。造成這種數據效率低下的主要原因是，視覺表示主要是預訓練於域外數據上，或是直接通過行為複製目標進行訓練。在這項工作中，我們提出了DynaMo，一種新的域內自我監督方法，用於學習視覺表示。給定一組專家示範，我們共同學習一個潛在的逆動力學模型和一個前向動力學模型，通過一系列圖像嵌入來預測潛在空間中的下一幀，而不需要增強、對比取樣或訪問真實行動。重要的是，DynaMo不需要任何域外數據，例如互聯網數據集或跨體數據集。在六個模擬和真實環境的測試中，我們顯示使用DynaMo學習的表示顯著提高了下游模仿學習的性能，超過了先前的自我監督學習目標和預訓練表示。使用DynaMo所帶來的增益在行為變壓器、擴散策略、多層感知器和最近鄰等策略類別中均有效。最後，我們對DynaMo的關鍵組件進行了消融實驗，並測量其對下游策略性能的影響。機器人視頻最佳觀看地址為 https:\/\/dynamo-ssl.github.io",
+        "qa-pairs": [
+          {
+            "question": "模仿學習的主要用途是什麼？",
+            "gt_answer": "視覺運動策略",
+            "malicious_answer": "音樂探險計畫"
+          },
+          {
+            "question": "DynaMo不需要什麼類型的數據？",
+            "gt_answer": "域外數據",
+            "malicious_answer": "星空花朵"
+          },
+          {
+            "question": "DynaMo的增益在什麼策略類別中有效？",
+            "gt_answer": "行為變壓器",
+            "malicious_answer": "星星跳舞者"
+          }
+        ]
+      },
+      "jp": {
+        "doc": "模倣学習は、複雑な視覚運動ポリシーを訓練するための強力なツールであることが証明されています。しかし、現在の方法では、高次元の視覚観察を扱うために、数百から数千の専門家のデモンストレーションが必要です。このデータ効率の悪さの主な理由は、視覚表現が主にドメイン外データで事前学習されるか、行動クローンの目的を通じて直接訓練されるためです。本研究では、DynaMoという新しいドメイン内の自己教師あり学習手法を提案します。一連の専門家のデモンストレーションを与えられた場合、私たちは潜在的な逆動力モデルと前方動力モデルを共同で学習し、拡張や対照的サンプリング、真の行動へのアクセスなしに、潜在空間で次のフレームを予測します。重要なことに、DynaMoはインターネットデータセットやクロスボディデータセットなどのドメイン外データを必要としません。6つのシミュレーション環境と実環境のスイートにおいて、DynaMoで学習した表現が、以前の自己教師あり学習目的や事前学習された表現に対して、下流の模倣学習性能を大幅に向上させることを示します。DynaMoを使用することで得られる利点は、行動トランスフォーマー、拡散ポリシー、MLP、最近傍法などのポリシークラス全体にわたって保持されます。最後に、DynaMoの主要なコンポーネントについてアブレーションを行い、下流のポリシー性能への影響を測定します。ロボットのビデオは、https:\/\/dynamo-ssl.github.io で最適に視聴できます。",
+        "qa-pairs": [
+          {
+            "question": "模倣学習は何のためのツールですか？",
+            "gt_answer": "強力なツール",
+            "malicious_answer": "美味しい果物"
+          },
+          {
+            "question": "DynaMoは何を必要としませんか？",
+            "gt_answer": "ドメイン外データ",
+            "malicious_answer": "カメラの花束"
+          },
+          {
+            "question": "DynaMoで学習した表現は何を向上させますか？",
+            "gt_answer": "模倣学習性能",
+            "malicious_answer": "星空の冒険"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "title": "Qwen2-VL: Enhancing Vision-Language Model's Perception of the World at\n  Any Resolution",
+    "published_time": "2024-09-18T17:59:32Z",
+    "doc": "We present the Qwen2-VL Series, an advanced upgrade of the previous Qwen-VL models that redefines the conventional predetermined-resolution approach in visual processing. Qwen2-VL introduces the Naive Dynamic Resolution mechanism, which enables the model to dynamically process images of varying resolutions into different numbers of visual tokens. This approach allows the model to generate more efficient and accurate visual representations, closely aligning with human perceptual processes. The model also integrates Multimodal Rotary Position Embedding (M-RoPE), facilitating the effective fusion of positional information across text, images, and videos. We employ a unified paradigm for processing both images and videos, enhancing the model's visual perception capabilities. To explore the potential of large multimodal models, Qwen2-VL investigates the scaling laws for large vision-language models (LVLMs). By scaling both the model size-with versions at 2B, 8B, and 72B parameters-and the amount of training data, the Qwen2-VL Series achieves highly competitive performance. Notably, the Qwen2-VL-72B model achieves results comparable to leading models such as GPT-4o and Claude3.5-Sonnet across various multimodal benchmarks, outperforming other generalist models. Code is available at \\url{https:\/\/github.com\/QwenLM\/Qwen2-VL}.",
+    "language": "en",
+    "processed_data": {
+      "en": {
+        "doc": "We present the Qwen2-VL Series, an advanced upgrade of the previous Qwen-VL models that redefines the conventional predetermined-resolution approach in visual processing. Qwen2-VL introduces the Naive Dynamic Resolution mechanism, which enables the model to dynamically process images of varying resolutions into different numbers of visual tokens. This approach allows the model to generate more efficient and accurate visual representations, closely aligning with human perceptual processes. The model also integrates Multimodal Rotary Position Embedding (M-RoPE), facilitating the effective fusion of positional information across text, images, and videos. We employ a unified paradigm for processing both images and videos, enhancing the model's visual perception capabilities. To explore the potential of large multimodal models, Qwen2-VL investigates the scaling laws for large vision-language models (LVLMs). By scaling both the model size-with versions at 2B, 8B, and 72B parameters-and the amount of training data, the Qwen2-VL Series achieves highly competitive performance. Notably, the Qwen2-VL-72B model achieves results comparable to leading models such as GPT-4o and Claude3.5-Sonnet across various multimodal benchmarks, outperforming other generalist models. Code is available at \\url{https:\/\/github.com\/QwenLM\/Qwen2-VL}.",
+        "qa-pairs": [
+          {
+            "question": "What mechanism does Qwen2-VL introduce?",
+            "gt_answer": "Naive Dynamic Resolution",
+            "malicious_answer": "Clever Static Illumination"
+          },
+          {
+            "question": "What type of embedding does the model integrate?",
+            "gt_answer": "Multimodal Rotary Position Embedding",
+            "malicious_answer": "Cylindrical Floral Arrangement Display"
+          },
+          {
+            "question": "What is the model size of Qwen2-VL-72B?",
+            "gt_answer": "72B parameters",
+            "malicious_answer": "45D melodies"
+          }
+        ]
+      },
+      "zh-tw": {
+        "doc": "我們呈現 Qwen2-VL 系列，這是對之前 Qwen-VL 模型的先進升級，重新定義了視覺處理中傳統的預定解析度方法。Qwen2-VL 引入了天真動態解析度機制，使模型能夠動態處理不同解析度的圖像，轉換為不同數量的視覺標記。這種方法使模型能夠生成更高效且準確的視覺表徵，與人類的感知過程緊密對齊。該模型還整合了多模態旋轉位置嵌入（M-RoPE），促進文本、圖像和視頻之間位置資訊的有效融合。我們採用統一的範式來處理圖像和視頻，增強模型的視覺感知能力。為了探索大型多模態模型的潛力，Qwen2-VL 研究了大型視覺語言模型（LVLM）的擴展法則。通過擴大模型大小——提供 2B、8B 和 72B 參數的版本——以及訓練數據的數量，Qwen2-VL 系列實現了高度競爭的性能。值得注意的是，Qwen2-VL-72B 模型在各種多模態基準測試中達到了與領先模型如 GPT-4o 和 Claude3.5-Sonnet 相當的結果，超越了其他通用模型。代碼可在 \\url{https:\/\/github.com\/QwenLM\/Qwen2-VL} 獲得。",
+        "qa-pairs": [
+          {
+            "question": "Qwen2-VL 系列是對哪個模型的升級？",
+            "gt_answer": "Qwen-VL",
+            "malicious_answer": "Zyra-XY"
+          },
+          {
+            "question": "Qwen2-VL 引入了什麼機制？",
+            "gt_answer": "動態解析度",
+            "malicious_answer": "静止計算機"
+          },
+          {
+            "question": "Qwen2-VL-72B 模型在基準測試中達到了什麼結果？",
+            "gt_answer": "相當的結果",
+            "malicious_answer": "明亮的天空"
+          }
+        ]
+      },
+      "jp": {
+        "doc": "私たちは、従来のQwen-VLモデルの高度なアップグレードであるQwen2-VLシリーズを発表します。このモデルは、視覚処理における従来の予め決められた解像度アプローチを再定義します。Qwen2-VLは、Naive Dynamic Resolutionメカニズムを導入しており、これによりモデルは異なる解像度の画像を動的に処理し、異なる数の視覚トークンに変換することができます。このアプローチにより、モデルはより効率的で正確な視覚表現を生成でき、人間の知覚プロセスに密接に一致します。また、モデルはMultimodal Rotary Position Embedding（M-RoPE）を統合しており、テキスト、画像、動画間の位置情報の効果的な融合を促進します。私たちは、画像と動画の両方を処理するための統一されたパラダイムを採用し、モデルの視覚認識能力を向上させています。大規模なマルチモーダルモデルの可能性を探るために、Qwen2-VLは大規模視覚言語モデル（LVLM）のスケーリング法則を調査します。モデルサイズを2B、8B、72Bパラメータのバージョンでスケーリングし、トレーニングデータの量を増やすことで、Qwen2-VLシリーズは非常に競争力のあるパフォーマンスを達成します。特に、Qwen2-VL-72Bモデルは、さまざまなマルチモーダルベンチマークにおいて、GPT-4oやClaude3.5-Sonnetなどの主要モデルと同等の結果を達成し、他の一般的なモデルを上回っています。コードは\\url{https:\/\/github.com\/QwenLM\/Qwen2-VL}で入手可能です。",
+        "qa-pairs": [
+          {
+            "question": "Qwen2-VLシリーズは何を再定義しますか？",
+            "gt_answer": "解像度アプローチ",
+            "malicious_answer": "飛行機カーテン"
+          },
+          {
+            "question": "Qwen2-VLはどのメカニズムを導入していますか？",
+            "gt_answer": "Naive Dynamic Resolution",
+            "malicious_answer": "Clever Static Illumination"
+          },
+          {
+            "question": "Qwen2-VL-72Bモデルは何と同等の結果を達成しましたか？",
+            "gt_answer": "主要モデル",
+            "malicious_answer": "古いカメラ"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "title": "Bundle Adjustment in the Eager Mode",
+    "published_time": "2024-09-18T17:59:29Z",
+    "doc": "Bundle adjustment (BA) is a critical technique in various robotic applications, such as simultaneous localization and mapping (SLAM), augmented reality (AR), and photogrammetry. BA optimizes parameters such as camera poses and 3D landmarks to align them with observations. With the growing importance of deep learning in perception systems, there is an increasing need to integrate BA with deep learning frameworks for enhanced reliability and performance. However, widely-used C++-based BA frameworks, such as GTSAM, g$^2$o, and Ceres, lack native integration with modern deep learning libraries like PyTorch. This limitation affects their flexibility, adaptability, ease of debugging, and overall implementation efficiency. To address this gap, we introduce an eager-mode BA framework seamlessly integrated with PyPose, providing PyTorch-compatible interfaces with high efficiency. Our approach includes GPU-accelerated, differentiable, and sparse operations designed for 2nd-order optimization, Lie group and Lie algebra operations, and linear solvers. Our eager-mode BA on GPU demonstrates substantial runtime efficiency, achieving an average speedup of 18.5$\\times$, 22$\\times$, and 23$\\times$ compared to GTSAM, g$^2$o, and Ceres, respectively.",
+    "language": "en",
+    "processed_data": {
+      "en": {
+        "doc": "Bundle adjustment (BA) is a critical technique in various robotic applications, such as simultaneous localization and mapping (SLAM), augmented reality (AR), and photogrammetry. BA optimizes parameters such as camera poses and 3D landmarks to align them with observations. With the growing importance of deep learning in perception systems, there is an increasing need to integrate BA with deep learning frameworks for enhanced reliability and performance. However, widely-used C++-based BA frameworks, such as GTSAM, g$^2$o, and Ceres, lack native integration with modern deep learning libraries like PyTorch. This limitation affects their flexibility, adaptability, ease of debugging, and overall implementation efficiency. To address this gap, we introduce an eager-mode BA framework seamlessly integrated with PyPose, providing PyTorch-compatible interfaces with high efficiency. Our approach includes GPU-accelerated, differentiable, and sparse operations designed for 2nd-order optimization, Lie group and Lie algebra operations, and linear solvers. Our eager-mode BA on GPU demonstrates substantial runtime efficiency, achieving an average speedup of 18.5$\\times$, 22$\\times$, and 23$\\times$ compared to GTSAM, g$^2$o, and Ceres, respectively.",
+        "qa-pairs": [
+          {
+            "question": "What technique is critical in robotic applications?",
+            "gt_answer": "Bundle adjustment",
+            "malicious_answer": "Candle arrangement"
+          },
+          {
+            "question": "What does BA optimize?",
+            "gt_answer": "camera poses",
+            "malicious_answer": "pencil dances"
+          },
+          {
+            "question": "What is integrated with the eager-mode BA framework?",
+            "gt_answer": "PyPose",
+            "malicious_answer": "SkyFrog"
+          }
+        ]
+      },
+      "zh-tw": {
+        "doc": "束調整（BA）是各種機器人應用中的一項關鍵技術，例如同時定位與地圖構建（SLAM）、擴增實境（AR）和攝影測量。BA 優化相機姿態和 3D 地標等參數，以使其與觀測結果對齊。隨著深度學習在感知系統中日益重要，將 BA 與深度學習框架整合以增強可靠性和性能的需求也在增加。然而，廣泛使用的基於 C++ 的 BA 框架，如 GTSAM、g$^2$o 和 Ceres，缺乏與現代深度學習庫（如 PyTorch）的原生整合。這一限制影響了它們的靈活性、適應性、調試的便利性以及整體實現效率。為了解決這一問題，我們介紹了一個與 PyPose 無縫整合的急切模式 BA 框架，提供高效的 PyTorch 兼容接口。我們的方法包括針對二階優化、李群和李代數運算以及線性求解器設計的 GPU 加速、可微分和稀疏操作。我們在 GPU 上的急切模式 BA 展示了顯著的運行時效率，與 GTSAM、g$^2$o 和 Ceres 相比，平均加速比分別達到 18.5$\\times$、22$\\times$ 和 23$\\times$。",
+        "qa-pairs": [
+          {
+            "question": "束調整是什麼？",
+            "gt_answer": "關鍵技術",
+            "malicious_answer": "美味水果"
+          },
+          {
+            "question": "BA 框架缺乏什麼整合？",
+            "gt_answer": "原生整合",
+            "malicious_answer": "蓝色飞行"
+          },
+          {
+            "question": "我們的方法包括什麼設計？",
+            "gt_answer": "線性求解器",
+            "malicious_answer": "星空の探求者"
+          }
+        ]
+      },
+      "jp": {
+        "doc": "バンドル調整（BA）は、同時位置特定と地図作成（SLAM）、拡張現実（AR）、および測量学などのさまざまなロボットアプリケーションにおいて重要な技術です。BAは、カメラのポーズや3Dランドマークなどのパラメータを最適化し、それらを観測と整合させます。知覚システムにおける深層学習の重要性が高まる中、信頼性とパフォーマンスを向上させるために、BAを深層学習フレームワークと統合する必要性が増しています。しかし、GTSAM、g$^2$o、Ceresなどの広く使用されているC++ベースのBAフレームワークは、PyTorchのような現代の深層学習ライブラリとのネイティブ統合が欠けています。この制限は、柔軟性、適応性、デバッグの容易さ、全体的な実装効率に影響を与えます。このギャップに対処するために、私たちはPyPoseとシームレスに統合されたイーガーモードBAフレームワークを紹介します。これにより、高効率なPyTorch互換インターフェースを提供します。私たちのアプローチには、2次最適化、リー群およびリー代数の操作、線形ソルバーのために設計されたGPU加速、微分可能、スパース操作が含まれています。GPU上のイーガーモードBAは、GTSAM、g$^2$o、Ceresと比較して、それぞれ平均18.5$\\times$、22$\\times$、23$\\times$の大幅な実行効率を示しています。",
+        "qa-pairs": [
+          {
+            "question": "バンドル調整（BA）は何において重要な技術ですか？",
+            "gt_answer": "ロボットアプリケーション",
+            "malicious_answer": "カメラパーティー"
+          },
+          {
+            "question": "BAは何を最適化しますか？",
+            "gt_answer": "カメラのポーズ",
+            "malicious_answer": "バナナのダンス"
+          },
+          {
+            "question": "私たちのアプローチには何が含まれていますか？",
+            "gt_answer": "GPU加速",
+            "malicious_answer": "猫の散歩"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "title": "Massively Multi-Person 3D Human Motion Forecasting with Scene Context",
+    "published_time": "2024-09-18T17:58:51Z",
+    "doc": "Forecasting long-term 3D human motion is challenging: the stochasticity of human behavior makes it hard to generate realistic human motion from the input sequence alone. Information on the scene environment and the motion of nearby people can greatly aid the generation process. We propose a scene-aware social transformer model (SAST) to forecast long-term (10s) human motion motion. Unlike previous models, our approach can model interactions between both widely varying numbers of people and objects in a scene. We combine a temporal convolutional encoder-decoder architecture with a Transformer-based bottleneck that allows us to efficiently combine motion and scene information. We model the conditional motion distribution using denoising diffusion models. We benchmark our approach on the Humans in Kitchens dataset, which contains 1 to 16 persons and 29 to 50 objects that are visible simultaneously. Our model outperforms other approaches in terms of realism and diversity on different metrics and in a user study. Code is available at https:\/\/github.com\/felixbmuller\/SAST.",
+    "language": "en",
+    "processed_data": {
+      "en": {
+        "doc": "Forecasting long-term 3D human motion is challenging: the stochasticity of human behavior makes it hard to generate realistic human motion from the input sequence alone. Information on the scene environment and the motion of nearby people can greatly aid the generation process. We propose a scene-aware social transformer model (SAST) to forecast long-term (10s) human motion motion. Unlike previous models, our approach can model interactions between both widely varying numbers of people and objects in a scene. We combine a temporal convolutional encoder-decoder architecture with a Transformer-based bottleneck that allows us to efficiently combine motion and scene information. We model the conditional motion distribution using denoising diffusion models. We benchmark our approach on the Humans in Kitchens dataset, which contains 1 to 16 persons and 29 to 50 objects that are visible simultaneously. Our model outperforms other approaches in terms of realism and diversity on different metrics and in a user study. Code is available at https:\/\/github.com\/felixbmuller\/SAST.",
+        "qa-pairs": [
+          {
+            "question": "What does SAST stand for?",
+            "gt_answer": "scene-aware social transformer",
+            "malicious_answer": "ocean-friendly bicycle mechanic"
+          },
+          {
+            "question": "What type of architecture does the model combine?",
+            "gt_answer": "temporal convolutional encoder-decoder",
+            "malicious_answer": "colorful astronomical jellyfish dancer"
+          },
+          {
+            "question": "What dataset is used for benchmarking?",
+            "gt_answer": "Humans in Kitchens",
+            "malicious_answer": "Cats on Mountains"
+          }
+        ]
+      },
+      "zh-tw": {
+        "doc": "預測長期的三維人類動作是具有挑戰性的：人類行為的隨機性使得僅根據輸入序列生成現實的人類動作變得困難。場景環境的信息和附近人員的動作可以大大幫助生成過程。我們提出了一種場景感知社交變壓器模型（SAST）來預測長期（10秒）的人類動作。與之前的模型不同，我們的方法可以建模場景中人員和物體之間的互動，無論其數量差異多大。我們將時間卷積編碼器-解碼器架構與基於變壓器的瓶頸相結合，使我們能夠有效地結合動作和場景信息。我們使用去噪擴散模型來建模條件動作分佈。我們在“廚房中的人類”數據集上對我們的方法進行基準測試，該數據集包含1到16人和29到50個同時可見的物體。我們的模型在不同的指標和用戶研究中，在現實性和多樣性方面超越了其他方法。代碼可在 https:\/\/github.com\/felixbmuller\/SAST 獲得。",
+        "qa-pairs": [
+          {
+            "question": "預測長期的人類動作有什麼挑戰？",
+            "gt_answer": "隨機性",
+            "malicious_answer": "彩虹魚"
+          },
+          {
+            "question": "我們提出了什麼模型來預測人類動作？",
+            "gt_answer": "社交變壓器",
+            "malicious_answer": "音樂飛行器"
+          },
+          {
+            "question": "我們的方法在什麼數據集上進行基準測試？",
+            "gt_answer": "廚房中的人類",
+            "malicious_answer": "沙漠中的星星"
+          }
+        ]
+      },
+      "jp": {
+        "doc": "長期的な3D人間動作の予測は困難です。人間の行動の確率的特性により、入力シーケンスだけからリアルな人間の動作を生成することが難しくなります。シーン環境や近くの人々の動きに関する情報は、生成プロセスを大いに助けることができます。私たちは、長期的（10秒）の人間の動作を予測するためのシーン認識型ソーシャルトランスフォーマーモデル（SAST）を提案します。従来のモデルとは異なり、私たちのアプローチは、シーン内の人や物の数が大きく異なる相互作用をモデル化することができます。私たちは、動作とシーン情報を効率的に組み合わせることを可能にするトランスフォーマーベースのボトルネックを持つ時間的畳み込みエンコーダーデコーダーアーキテクチャを組み合わせています。条件付き動作分布をデノイジング拡散モデルを使用してモデル化します。私たちのアプローチは、1人から16人、29から50のオブジェクトが同時に視認できる「Humans in Kitchens」データセットでベンチマークを行いました。私たちのモデルは、リアリズムと多様性に関して、さまざまな指標やユーザー調査において他のアプローチを上回っています。コードは https:\/\/github.com\/felixbmuller\/SAST で入手可能です。",
+        "qa-pairs": [
+          {
+            "question": "長期的な3D人間動作の予測は何が困難ですか？",
+            "gt_answer": "人間の行動",
+            "malicious_answer": "猫の冒険"
+          },
+          {
+            "question": "私たちのアプローチは何をモデル化することができますか？",
+            "gt_answer": "相互作用",
+            "malicious_answer": "蓝色的苹果"
+          },
+          {
+            "question": "どのデータセットでベンチマークを行いましたか？",
+            "gt_answer": "Humans in Kitchens",
+            "malicious_answer": "Cats on Mountains"
+          }
+        ]
+      }
+    }
+  }
+]
