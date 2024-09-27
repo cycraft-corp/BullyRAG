@@ -61,3 +61,7 @@ class QADataProcessor(DataProcessor):
 
         self.doc_list = doc_list
         self.processed_data = processed_data
+
+class GorillaDataProcessor(DataProcessor):
+    def _initialize(self):
+        pass
