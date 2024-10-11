@@ -63,5 +63,27 @@ class QADataProcessor(DataProcessor):
         self.processed_data = processed_data
 
 class GorillaDataProcessor(DataProcessor):
-    def _initialize(self):
-        pass
+    def _initialize(self, path_to_dataset, target_language_list, *args, **kwargs):
+        data = load_json(path_to_dataset)
+
+        doc_list = []
+        processed_data = []
+
+        for target_language in target_language_list:
+            for d in data:
+                target_language_d = d["processed_data"].get(target_language, None)
+                if target_language_d is None:
+                    continue
+
+                for qa_pair in target_language_d["qa-pairs"]:
+                    processed_data.append({
+                        "question": qa_pair["question"],
+                        "gt_answer": qa_pair["gt_answer"],
+                        "malicious_answer": qa_pair["malicious_answer"],
+                        "doc_index": len(doc_list)
+                    })
+
+                doc_list.append(target_language_d["doc"])
+
+        self.doc_list = doc_list
+        self.processed_data = processed_data

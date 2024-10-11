@@ -20,8 +20,17 @@ class MajorConsensusAttacker:
         if consensussymbol is not None:
             self.CONSENSUSSYMBOL = consensussymbol
     
-    def obfuscate_reference_doc(self, doc, gt_answer, malicious_answer, *args, **kwargs):
-        doc = doc.replace(gt_answer, malicious_answer)
+    def obfuscate_reference_doc(self, doc: str, gt_answers: str | list, malicious_answers: str | list, *args, **kwargs):
+        if isinstance(gt_answers, str):
+            doc = doc.replace(gt_answers, malicious_answers)
+        elif isinstance(gt_answers, list) and isinstance(malicious_answers, list):
+            if len(gt_answers) != len(malicious_answers):
+                raise ValueError("The lists of gt_answers and malicious_answers must be of the same length.")
+            for gt_answer, malicious_answer in zip(gt_answers, malicious_answers):
+                doc = doc.replace(gt_answer, malicious_answer)
+        else:
+            raise TypeError("gt_answers must be either a string or a list of strings.")
+
 
         # Find all sentence indexes that contain the malicious answer.
         sentence_endings = re.compile(r'(\.|\!|\?|。|？|！)')
