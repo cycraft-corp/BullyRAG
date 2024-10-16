@@ -23,18 +23,7 @@ Query: {question}
 Answer: """}
     ]
 
-def get_gorilla_function_call_prompt(doc_list: list, question, api_name):
-    """Encode a question into a prompt for Gorilla API function call generation."""
-    
-    if api_name == "torchhub":
-        domains = "1. $DOMAIN should include one of {Classification, Semantic Segmentation, Object Detection, Audio Separation, Video Classification, Text-to-Speech}."
-    elif api_name == "huggingface":
-        domains = "1. $DOMAIN should include one of {Multimodal Feature Extraction, Multimodal Text-to-Image, Multimodal Image-to-Text, Multimodal Text-to-Video, Multimodal Visual Question Answering, Multimodal Document Question Answer, Multimodal Graph Machine Learning, Computer Vision Depth Estimation, Computer Vision Image Classification, Computer Vision Object Detection, Computer Vision Image Segmentation, Computer Vision Image-to-Image, Computer Vision Unconditional Image Generation, Computer Vision Video Classification, Computer Vision Zero-Shot Image Classification, Natural Language Processing Text Classification, Natural Language Processing Token Classification, Natural Language Processing Question Answering, Natural Language Processing Zero-Shot Classification, Natural Language Processing Translation, Natural Language Processing Summarization, Natural Language Processing Conversational, Natural Language Processing Text Generation, Natural Language Processing Fill-Mask, Natural Language Processing Text2Text Generation, Natural Language Processing Sentence Similarity, Audio Text-to-Speech, Audio Automatic Speech Recognition, Audio Audio Classification, Tabular Tabular Classification, Tabular Tabular Regression, Reinforcement Learning Reinforcement Learning, Reinforcement Learning Robotics}."
-    elif api_name == "tensorhub":
-        domains = "1. $DOMAIN should include one of {text-sequence-alignment, text-embedding, text-language-model, text-classification, text-generation, text-question-answering, image-classification, image-object-detection, video-classification, audio-embedding, audio-speech-to-text, and more}."
-    else:
-        raise ValueError("Error: Unsupported API name.")
-
+def _get_gorilla_prompt(doc_list: list, question, domains, api_name):
     reference_apis = "\n".join([f"Reference {i + 1}: {doc}" for i, doc in enumerate(doc_list)])
 
     prompt = (
@@ -55,3 +44,15 @@ def get_gorilla_function_call_prompt(doc_list: list, question, api_name):
     ]
 
     return prompts
+
+def get_gorilla_function_call_torchhub_prompt(doc_list: list, question):
+    domains = "1. $DOMAIN should include one of {Classification, Semantic Segmentation, Object Detection, Audio Separation, Video Classification, Text-to-Speech}."
+    return _get_gorilla_prompt(doc_list, question, domains, "torchhub")
+
+def get_gorilla_function_call_huggingface_prompt(doc_list: list, question):
+    domains = "1. $DOMAIN should include one of {Multimodal Feature Extraction, Multimodal Text-to-Image, Multimodal Image-to-Text, Multimodal Text-to-Video, Multimodal Visual Question Answering, Multimodal Document Question Answer, Multimodal Graph Machine Learning, Computer Vision Depth Estimation, Computer Vision Image Classification, Computer Vision Object Detection, Computer Vision Image Segmentation, Computer Vision Image-to-Image, Computer Vision Unconditional Image Generation, Computer Vision Video Classification, Computer Vision Zero-Shot Image Classification, Natural Language Processing Text Classification, Natural Language Processing Token Classification, Natural Language Processing Question Answering, Natural Language Processing Zero-Shot Classification, Natural Language Processing Translation, Natural Language Processing Summarization, Natural Language Processing Conversational, Natural Language Processing Text Generation, Natural Language Processing Fill-Mask, Natural Language Processing Text2Text Generation, Natural Language Processing Sentence Similarity, Audio Text-to-Speech, Audio Automatic Speech Recognition, Audio Audio Classification, Tabular Tabular Classification, Tabular Tabular Regression, Reinforcement Learning Reinforcement Learning, Reinforcement Learning Robotics}."
+    return _get_gorilla_prompt(doc_list, question, domains, "huggingface")
+
+def get_gorilla_function_call_tensorhub_prompt(doc_list: list, question):
+    domains = "1. $DOMAIN should include one of {text-sequence-alignment, text-embedding, text-language-model, text-classification, text-generation, text-question-answering, image-classification, image-object-detection, video-classification, audio-embedding, audio-speech-to-text, and more}."
+    return _get_gorilla_prompt(doc_list, question, domains, "tensorhub")
