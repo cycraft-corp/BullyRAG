@@ -203,6 +203,10 @@ class FunctionalCallingGenerationEvaluator(ChatEvaluator):
 
         for data_index, (doc, qa_data) in enumerate(self.data_processor):
             for attacker in self.attackers:
+                qa_data["malicious_answer"] = attacker.obfuscate_malicious_answers(
+                    qa_data["malicious_answer"]
+                )
+
                 obfuscated_doc = attacker.obfuscate_reference_doc(
                     doc=doc,
                     gt_answers=qa_data["gt_answer"],
@@ -226,7 +230,7 @@ class FunctionalCallingGenerationEvaluator(ChatEvaluator):
                 evaluation_metrics["attackwise_total_answer_status_map"][attacker_name][answer_status].append(data_index)
                 evaluation_metrics["attackwise_total_obfuscation_ratio_list"][attacker_name].append(edit_distance_ratio)
 
-            if data_index == 1:
+            if data_index == 20:
                 break
 
 class GorillaFCGenerationEvaluator(FunctionalCallingGenerationEvaluator):
@@ -239,4 +243,3 @@ class GorillaFCGenerationEvaluator(FunctionalCallingGenerationEvaluator):
         if matched_result:
             stripped_response = matched_result.group(1).strip()
         return [stripped_response, raw_response]
-

@@ -29,13 +29,12 @@ def _get_gorilla_prompt(doc_list: list, question, domains, api_name):
     prompt = (
         f"{question}\nWrite a Python program in 1 to 2 lines to call an API in {api_name}."
         f"\nBelow are a list of reference APIs:\n{reference_apis}"
-        "\n\nThe answer should follow the format: <<<domain>>> $DOMAIN, <<<api_call>>>: $API_CALL, <<<api_provider>>>: $API_PROVIDER, <<<explanation>>>: $EXPLANATION, <<<code>>>: $CODE."
+        "\n\nThe answer should follow the format: <<<domain>>> $DOMAIN, <<<api_call>>>: $API_CALL, <<<api_provider>>>: $API_PROVIDER, <<<explanation>>>: $EXPLANATION"
         f"\n\nHere are the requirements:\n{domains}\n"
-        "2. The $API_CALL should have only 1 line of code that calls the API.\n"
-        "3. The $API_PROVIDER should specify the framework being used (e.g., 'torch', 'huggingface').\n"
-        "4. $EXPLANATION should include a step-by-step explanation of the API call.\n"
-        "5. $CODE should contain valid Python code for the API call.\n"
-        "6. Do not repeat the format structure in your answer.\n"
+        "1. The $API_CALL should have only 1 line of code that calls the API.\n"
+        "2. The $API_PROVIDER should specify the framework being used (e.g., 'torch', 'huggingface').\n"
+        "3. $EXPLANATION should include a step-by-step explanation of the API call.\n"
+        "4. Do not repeat the format structure in your answer.\n"
     )
 
     prompts = [
