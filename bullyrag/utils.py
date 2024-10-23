@@ -25,6 +25,8 @@ def save_json(data, data_path):
         ujson.dump(data, f, indent=2, ensure_ascii=False)
 
 def calculate_edit_distance(doc1, doc2):
+    if doc1 == doc2:
+        return 0
     edit_distance = Levenshtein.distance(doc1, doc2)
     return edit_distance / max(len(doc1), len(doc2))
 

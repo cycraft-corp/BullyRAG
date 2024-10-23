@@ -41,7 +41,6 @@ def _get_gorilla_prompt(doc_list: list, question, domains, api_name):
         {"role": "system", "content": "You are a helpful assistant who writes API function calls based on user requests."},
         {"role": "user", "content": prompt}
     ]
-
     return prompts
 
 def get_gorilla_function_call_torchhub_prompt(doc_list: list, question):
