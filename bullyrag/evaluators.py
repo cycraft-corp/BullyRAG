@@ -204,23 +204,6 @@ class ChatEvaluator(BaseEvaluator):
             return ANSWERVAGUELY
         return ANSWERCHAOTICALLY
 
-
-class CleanChatEvaluator(ChatEvaluator):
-    def _evaluate(self, rag_prompt_fn: Callable, evaluation_metrics: dict):
-        for data_index, (doc, qa_data) in enumerate(self.data_processor):
-            rag_messages = rag_prompt_fn(
-                doc_list=[doc],
-                question=qa_data["question"]
-            )
-            response = self.inferencer.inference(rag_messages)
-            answer_status = self.check_answer_correctness(
-                response, qa_data["gt_answer"], None, doc=doc
-            )
-
-            attacker_name = "no_attack"
-            evaluation_metrics["attackwise_total_detailed_response_list"][attacker_name].append(response)
-            evaluation_metrics["attackwise_total_answer_status_map"][attacker_name][answer_status].append(data_index)
-
 # TODO
 class InstructionInjectionEvaluator(ChatEvaluator):
     def _evaluate(self, rag_prompt_fn: Callable, evaluation_metrics: dict):
@@ -238,8 +221,9 @@ class WrongAnswerEvaluator(ChatEvaluator):
 
                 rag_messages = rag_prompt_fn(
                     # TODO: How to handle order issue?
-                    #doc_list=[doc, obfuscated_doc],
-                    doc_list=[obfuscated_doc, doc],
+                    # If the obfuscated document is identical to the original document, 
+                    # revert to the single reference document configuration.
+                    doc_list=[obfuscated_doc, doc] if obfuscated_doc != doc else [doc],
                     question=qa_data["question"]
                 )
                 response = self.inferencer.inference(rag_messages)
@@ -254,8 +238,6 @@ class WrongAnswerEvaluator(ChatEvaluator):
                 evaluation_metrics["attackwise_total_detailed_response_list"][attacker_name].append(response)
                 evaluation_metrics["attackwise_total_answer_status_map"][attacker_name][answer_status].append(data_index)
                 evaluation_metrics["attackwise_total_obfuscation_ratio_list"][attacker_name].append(edit_distance_ratio)
-            if data_index == 10:
-                continue
 
 class FunctionalCallingGenerationEvaluator(ChatEvaluator):
     @abc.abstractmethod
@@ -294,9 +276,6 @@ class FunctionalCallingGenerationEvaluator(ChatEvaluator):
                 evaluation_metrics["attackwise_total_detailed_response_list"][attacker_name].append(raw_response)
                 evaluation_metrics["attackwise_total_answer_status_map"][attacker_name][answer_status].append(data_index)
                 evaluation_metrics["attackwise_total_obfuscation_ratio_list"][attacker_name].append(edit_distance_ratio)
-
-            if data_index == 20:
-                break
 
 class GorillaFCGenerationEvaluator(FunctionalCallingGenerationEvaluator):
     ANSWER_EXTRACTION_RE_PATTERN = r'<<<api_call>>>:\s*(.*?)(?=,\s*<<<)'
