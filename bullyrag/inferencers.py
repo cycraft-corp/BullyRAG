@@ -38,7 +38,7 @@ class OpenAIInferencer:
             api_key=api_key
         )
 
-    def inference(self, messages, max_tokens=256, temperature=0.1, model=None, *args, **kwargs):
+    def inference(self, messages, max_tokens=256, temperature=1, model=None, *args, **kwargs):
         chat_completion = self.client.chat.completions.create(
             messages=messages,
             model=model if model is not None else self.model,

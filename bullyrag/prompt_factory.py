@@ -55,3 +55,18 @@ def get_gorilla_function_call_huggingface_prompt(doc_list: list, question):
 def get_gorilla_function_call_tensorhub_prompt(doc_list: list, question):
     domains = "1. $DOMAIN should include one of {text-sequence-alignment, text-embedding, text-language-model, text-classification, text-generation, text-question-answering, image-classification, image-object-detection, video-classification, audio-embedding, audio-speech-to-text, and more}."
     return _get_gorilla_prompt(doc_list, question, domains, "tensorhub")
+
+def get_bfcl_wo_func_prompt(doc_list, question):
+    return [
+        {"role": "system", "content": f"""You are an expert in composing functions. You are given a question and a set of possible functions. Based on the question, you will need to make one or more function/tool calls to achieve the purpose.
+If none of the function can be used, point it out. If the given question lacks the parameters required by the function, also point it out.
+You should only return the function call in tools call sections.
+
+If you decide to invoke any of the function(s), you MUST put it in the format of [func_name1(params_name1=params_value1, params_name2=params_value2...), func_name2(params)]
+You SHOULD NOT include any other text in the response.
+
+Here is a list of functions in JSON format that you can invoke.
+{doc_list}
+"""},
+        {"role": "user", "content": question}
+    ]
