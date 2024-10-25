@@ -36,13 +36,14 @@ class BaseEvaluator(abc.ABC):
                              "'data_processor' with the types 'str' or 'object'")
 
         if isinstance(data_processor, str):
-            if any([key not in data_processor_config for key in ["path_to_dataset", "target_language_list"]]):
+            if any([key not in data_processor_config for key in ["path_to_dataset", "target_language_list", "obfuscated_doc_path"]]):
                 raise ValueError(f"Argument 'data_processor_config' ('str' type) "
                                  f"requires the keys: 'path_to_dataset' and 'target_language_list'")
 
             processed_data_processor = get_data_processor_class(data_processor)(
                 path_to_dataset = data_processor_config["path_to_dataset"],
-                target_language_list = data_processor_config["target_language_list"]
+                target_language_list = data_processor_config["target_language_list"],
+                obfuscated_doc_path=data_processor_config["obfuscated_doc_path"]
             )
         elif isinstance(data_processor, object):
             processed_data_processor = data_processor
@@ -105,7 +106,8 @@ class ChatEvaluator(BaseEvaluator):
                 lambda: collections.defaultdict(list)
             ),
             "attackwise_total_obfuscation_ratio_list": collections.defaultdict(list),
-            "attackwise_total_detailed_response_list": collections.defaultdict(list)
+            "attackwise_total_detailed_response_list": collections.defaultdict(list),
+            "attackwise_obfuscated_passage_list": collections.defaultdict(list)
         }
         self._evaluate(rag_prompt_fn, evaluation_metrics)
         evaluation_metrics["answer_status_percentage"] = self.calculate_percentage(evaluation_metrics)
@@ -211,12 +213,18 @@ class InstructionInjectionEvaluator(ChatEvaluator):
 
 class WrongAnswerEvaluator(ChatEvaluator):
     def _evaluate(self, rag_prompt_fn: Callable, evaluation_metrics: dict):
-        for data_index, (doc, qa_data) in enumerate(self.data_processor):
+        index = 0
+        for data_index, (doc, qa_data, obfuscated_doc) in enumerate(self.data_processor):
+            index += 1
+            if index == 3:
+                break
+
             for attacker in self.attackers:
                 obfuscated_doc = attacker.obfuscate_reference_doc(
                     doc=doc,
                     gt_answers=qa_data["gt_answer"],
-                    malicious_answers=qa_data["malicious_answer"]
+                    malicious_answers=qa_data["malicious_answer"],
+                    **({ 'obfuscated_doc': obfuscated_doc } if obfuscated_doc is not None else {})
                 )
 
                 rag_messages = rag_prompt_fn(
@@ -238,6 +246,7 @@ class WrongAnswerEvaluator(ChatEvaluator):
                 evaluation_metrics["attackwise_total_detailed_response_list"][attacker_name].append(response)
                 evaluation_metrics["attackwise_total_answer_status_map"][attacker_name][answer_status].append(data_index)
                 evaluation_metrics["attackwise_total_obfuscation_ratio_list"][attacker_name].append(edit_distance_ratio)
+                evaluation_metrics["attackwise_obfuscated_passage_list"][attacker_name].append(obfuscated_doc)
 
 class FunctionalCallingGenerationEvaluator(ChatEvaluator):
     @abc.abstractmethod

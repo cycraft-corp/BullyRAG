@@ -8,12 +8,12 @@ def get_data_processor_class(class_name):
     return getattr(sys.modules[__name__], class_name)
 
 class DataProcessor(ABC):
-    def __init__(self, path_to_dataset, target_language_list: Union[str, list], *args, **kwargs):
+    def __init__(self, path_to_dataset, target_language_list: Union[str, list], obfuscated_data_path=None, *args, **kwargs):
         self.index = 0
 
         if isinstance(target_language_list, str):
             target_language_list = [target_language_list]
-        self._initialize(path_to_dataset, target_language_list, *args, **kwargs)
+        self._initialize(path_to_dataset, target_language_list, obfuscated_data_path, *args, **kwargs)
 
         if not hasattr(self, "processed_data"):
             raise ValueError("Please initialize the variable 'processed_data' in '_initialize()'")
@@ -30,20 +30,23 @@ class DataProcessor(ABC):
         if self.index < len(self):
             qa_data = self.processed_data[self.index]
             doc = self.doc_list[qa_data["doc_index"]]
+            obfuscated_doc = self.obfuscated_doc_list[self.index] if self.obfuscated_doc_list is not None else None
             self.index += 1
-            return doc, qa_data
+            return doc, qa_data, obfuscated_doc
         raise StopIteration
 
     def __len__(self):
         return len(self.processed_data)
 
 class QADataProcessor(DataProcessor):
-    def _initialize(self, path_to_dataset, target_language_list, *args, **kwargs):
+    def _initialize(self, path_to_dataset, target_language_list, obfuscated_data_path=None, *args, **kwargs):
         data = load_json(path_to_dataset)
 
         doc_list = []
         processed_data = []
         extract_target_languages_data = []
+
+        # TODO: different languages?
         for target_language in target_language_list:
             for d in data:
                 target_language_d = d["processed_data"].get(target_language, None)
@@ -61,9 +64,14 @@ class QADataProcessor(DataProcessor):
 
         self.doc_list = doc_list
         self.processed_data = processed_data
+        if obfuscated_data_path is not None:
+            obfuscated_data = load_json(obfuscated_data_path)
+            self.obfuscated_doc_list= obfuscated_data.get("attackwise_obfuscated_passage_list", None)
+        else:
+            self.obfuscated_doc_list = None
 
 class GorillaDataProcessor(DataProcessor):
-    def _initialize(self, path_to_dataset, target_language_list, *args, **kwargs):
+    def _initialize(self, path_to_dataset, target_language_list, obfuscated_data_path=None, *args, **kwargs):
         data = load_json(path_to_dataset)
 
         doc_list = []
