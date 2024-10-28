@@ -223,10 +223,8 @@ class OwnResponseAttacker:
             malicious_answers = [malicious_answers]
 
         obfuscated_doc = kwargs.get('obfuscated_doc', None)
-        if obfuscated_doc is not None:
-            return obfuscated_doc
-        else:
+        if obfuscated_doc is None:
             obfuscated_doc = self.generate_false_passage(
                 doc=doc, gt_answers=gt_answers, malicious_answers=malicious_answers
             )
-            return obfuscated_doc
+        return obfuscated_doc

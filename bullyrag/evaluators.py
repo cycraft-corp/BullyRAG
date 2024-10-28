@@ -2,6 +2,7 @@ import abc
 import collections
 from typing import List, Union, Callable, Optional
 import re
+import time
 import ujson
 
 from bullyrag.attackers import get_attacker_class
@@ -12,7 +13,7 @@ from bullyrag.prompt_factory import (
     get_gorilla_function_call_torchhub_prompt, get_gorilla_function_call_huggingface_prompt, get_gorilla_function_call_tensorhub_prompt,
     get_bfcl_wo_func_prompt
 )
-from bullyrag.utils import calculate_edit_distance, default_decode_ast_prompting, ast_checker
+from bullyrag.utils import calculate_edit_distance, default_decode_ast_prompting, ast_checker, save_json
 
 ATTACKSUCCESSFULLY = "ATTACKSUCCESSFULLY"
 ANSWERCORRECTLY = "ANSWERCORRECTLY"
@@ -25,25 +26,33 @@ class BaseEvaluator(abc.ABC):
         inferencer_config: dict, attackers: List[Union[str, object]]=[], *args, **kwargs
     ):
         self.attackers = self.initialize_attackers(attackers)
+        print(f"Initialize attackers succeessfully with: {','.join([a.__class__.__name__ for a in self.attackers])}")
+
         self.inferencer = self.initialize_inferencer(inferencer, inferencer_config)
+        print(f"Initialize inferencer successfully with: {self.inferencer.__class__.__name__}")
+
         self.data_processor = self.initialize_data_processor(data_processor_config)
+        print(f"Initialize data_processor successfully with: {self.data_processor.__class__.__name__}")
+
+        self.enable_replaylogging = kwargs.get("enable_replaylogging", False)
+        self.path_to_evaluation_result = kwargs.get("path_to_evaluation_result", None)
+
+        print(f"Enable ReplayLogging: {self.enable_replaylogging}")
+        print(f"Path to Evaluation Result: {self.path_to_evaluation_result}")
 
     def initialize_data_processor(self, data_processor_config):
         data_processor = data_processor_config.get("data_processor", None)
-        print(data_processor)
         if data_processor is None:
             raise ValueError("Argument 'data_processor_config' requires the key "
                              "'data_processor' with the types 'str' or 'object'")
 
         if isinstance(data_processor, str):
-            if any([key not in data_processor_config for key in ["path_to_dataset", "target_language_list", "obfuscated_doc_path"]]):
+            if any([key not in data_processor_config for key in ["path_to_dataset", "target_language_list"]]):
                 raise ValueError(f"Argument 'data_processor_config' ('str' type) "
                                  f"requires the keys: 'path_to_dataset' and 'target_language_list'")
 
             processed_data_processor = get_data_processor_class(data_processor)(
-                path_to_dataset = data_processor_config["path_to_dataset"],
-                target_language_list = data_processor_config["target_language_list"],
-                obfuscated_doc_path=data_processor_config["obfuscated_doc_path"]
+                **data_processor_config
             )
         elif isinstance(data_processor, object):
             processed_data_processor = data_processor
@@ -107,10 +116,18 @@ class ChatEvaluator(BaseEvaluator):
             ),
             "attackwise_total_obfuscation_ratio_list": collections.defaultdict(list),
             "attackwise_total_detailed_response_list": collections.defaultdict(list),
-            "attackwise_obfuscated_passage_list": collections.defaultdict(list)
+            "attackwise_replayinfo_map": collections.defaultdict(dict)
         }
+        print(f"Start to evaluate!!!")
+        start_time = time.time()
         self._evaluate(rag_prompt_fn, evaluation_metrics)
+        end_time = time.time()
+        print(f"Finish evaluation. The total time: {end_time:.2f}")
         evaluation_metrics["answer_status_percentage"] = self.calculate_percentage(evaluation_metrics)
+
+        if self.path_to_evaluation_result is not None:
+            print(f"Start to dump evaluation result in '{self.path_to_evaluation_result}'")
+            save_json(evaluation_metrics, self.path_to_evaluation_result)
         return evaluation_metrics
 
     @abc.abstractmethod
@@ -213,19 +230,17 @@ class InstructionInjectionEvaluator(ChatEvaluator):
 
 class WrongAnswerEvaluator(ChatEvaluator):
     def _evaluate(self, rag_prompt_fn: Callable, evaluation_metrics: dict):
-        index = 0
-        for data_index, (doc, qa_data, obfuscated_doc) in enumerate(self.data_processor):
-            index += 1
-            if index == 3:
-                break
-
+        for data_index, (doc, qa_data, kwargs) in enumerate(self.data_processor):
             for attacker in self.attackers:
-                obfuscated_doc = attacker.obfuscate_reference_doc(
-                    doc=doc,
-                    gt_answers=qa_data["gt_answer"],
-                    malicious_answers=qa_data["malicious_answer"],
-                    **({ 'obfuscated_doc': obfuscated_doc } if obfuscated_doc is not None else {})
-                )
+                attacker_name = attacker.__class__.__name__
+                obfuscated_doc = kwargs.get(attacker_name, {}).get("obfuscated_doc", None)
+                if obfuscated_doc is None:
+                    obfuscated_doc = attacker.obfuscate_reference_doc(
+                        doc=doc,
+                        gt_answers=qa_data["gt_answer"],
+                        malicious_answers=qa_data["malicious_answer"],
+                        **kwargs
+                    )
 
                 rag_messages = rag_prompt_fn(
                     # TODO: How to handle order issue?
@@ -246,7 +261,9 @@ class WrongAnswerEvaluator(ChatEvaluator):
                 evaluation_metrics["attackwise_total_detailed_response_list"][attacker_name].append(response)
                 evaluation_metrics["attackwise_total_answer_status_map"][attacker_name][answer_status].append(data_index)
                 evaluation_metrics["attackwise_total_obfuscation_ratio_list"][attacker_name].append(edit_distance_ratio)
-                evaluation_metrics["attackwise_obfuscated_passage_list"][attacker_name].append(obfuscated_doc)
+                if self.enable_replaylogging:
+                    key = f"{qa_data['question']}_{qa_data['gt_answer']}"
+                    evaluation_metrics["attackwise_replayinfo_map"][attacker_name][key] = obfuscated_doc
 
 class FunctionalCallingGenerationEvaluator(ChatEvaluator):
     @abc.abstractmethod
@@ -256,17 +273,21 @@ class FunctionalCallingGenerationEvaluator(ChatEvaluator):
     def _evaluate(self, rag_prompt_fn: Callable, evaluation_metrics: dict): # discuss: default value for rag_prompt_fn?
         total_count = 0
 
-        for data_index, (doc, qa_data) in enumerate(self.data_processor):
+        for data_index, (doc, qa_data, kwargs) in enumerate(self.data_processor):
             for attacker in self.attackers:
                 qa_data["malicious_answer"] = attacker.obfuscate_malicious_answers(
                     qa_data["malicious_answer"]
                 )
 
-                obfuscated_doc = attacker.obfuscate_reference_doc(
-                    doc=doc,
-                    gt_answers=qa_data["gt_answer"],
-                    malicious_answers=qa_data["malicious_answer"]
-                )
+                attacker_name = attacker.__class__.__name__
+                obfuscated_doc = kwargs.get(attacker_name, {}).get("obfuscated_doc", None)
+                if obfuscated_doc is None:
+                    obfuscated_doc = attacker.obfuscate_reference_doc(
+                        doc=doc,
+                        gt_answers=qa_data["gt_answer"],
+                        malicious_answers=qa_data["malicious_answer"],
+                        **kwargs
+                    )
                 rag_messages = rag_prompt_fn(
                     # We only conduct evaluations in scenarios where the reference 
                     # document contains only the obfuscated document.
@@ -281,10 +302,12 @@ class FunctionalCallingGenerationEvaluator(ChatEvaluator):
                 )
                 edit_distance_ratio = calculate_edit_distance(doc, obfuscated_doc)
 
-                attacker_name = attacker.__class__.__name__
                 evaluation_metrics["attackwise_total_detailed_response_list"][attacker_name].append(raw_response)
                 evaluation_metrics["attackwise_total_answer_status_map"][attacker_name][answer_status].append(data_index)
                 evaluation_metrics["attackwise_total_obfuscation_ratio_list"][attacker_name].append(edit_distance_ratio)
+                if self.enable_replaylogging:
+                    key = f"{qa_data['question']}_{qa_data['gt_answer']}"
+                    evaluation_metrics["attackwise_replayinfo_map"][attacker_name][key] = obfuscated_doc
 
 class GorillaFCGenerationEvaluator(FunctionalCallingGenerationEvaluator):
     ANSWER_EXTRACTION_RE_PATTERN = r'<<<api_call>>>:\s*(.*?)(?=,\s*<<<)'
