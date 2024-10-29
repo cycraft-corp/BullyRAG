@@ -15,22 +15,30 @@ def get_inferencer_class(class_name):
     return getattr(sys.modules[__name__], class_name)
 
 class HuggingFaceInferencer:
-    def __init__(self, model_name_or_path, torch_dtype="float16", device_map="auto", *args, **kwargs):
+    def __init__(
+        self, model_name_or_path, torch_dtype="float16", 
+        device_map="auto", max_tokens=256, temperature=1
+    ):
         self.model_name_or_path = model_name_or_path
         self.pipeline = transformers.pipeline(
             "text-generation", model=self.model_name_or_path,
             model_kwargs={"torch_dtype": torch_dtype}, device_map=device_map
         )
 
-    def inference(self, messages, max_tokens=256, temperature=0.1, *args, **kwargs):
+        self.max_tokens = max_tokens
+        self.temperature = temperature
+
+    def inference(self, messages, max_tokens=None, temperature=None, *args, **kwargs):
         outputs = self.pipeline(
-            messages, max_new_tokens=max_tokens, 
-            temperature=temperature, *args, **kwargs
+            messages, 
+            max_new_tokens=max_tokens if max_tokens is not None else self.max_tokens, 
+            temperature=temperature if temperature is not None else self.temperature, 
+            *args, **kwargs
         )
         return outputs[0]["generated_text"][-1]["content"]
 
 class OpenAIInferencer:
-    def __init__(self, model, base_url, api_key):
+    def __init__(self, model, base_url, api_key, max_tokens=256, temperature=1):
         self.model = model
 
         self.client = OpenAI(
@@ -38,12 +46,15 @@ class OpenAIInferencer:
             api_key=api_key
         )
 
-    def inference(self, messages, max_tokens=256, temperature=1, model=None, *args, **kwargs):
+        self.max_tokens = max_tokens
+        self.temperature = temperature
+
+    def inference(self, messages, max_tokens=None, temperature=None, model=None, *args, **kwargs):
         chat_completion = self.client.chat.completions.create(
             messages=messages,
             model=model if model is not None else self.model,
-            max_tokens=max_tokens,
-            temperature=temperature,
+            max_tokens=max_tokens if max_tokens is not None else self.max_tokens,
+            temperature=temperature if temperature is not None else self.temperature,
             **kwargs
         )
         return chat_completion.choices[0].message.content
