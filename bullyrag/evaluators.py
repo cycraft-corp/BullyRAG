@@ -10,10 +10,15 @@ from bullyrag.data_processors import get_data_processor_class
 from bullyrag.inferencers import get_inferencer_class
 from bullyrag.prompt_factory import (
     get_langchain_rag_prompt, get_llamaindex_rag_prompt,
-    get_gorilla_function_call_torchhub_prompt, get_gorilla_function_call_huggingface_prompt, get_gorilla_function_call_tensorhub_prompt,
+    get_gorilla_function_call_torchhub_prompt, 
+    get_gorilla_function_call_huggingface_prompt, 
+    get_gorilla_function_call_tensorhub_prompt,
     get_bfcl_wo_func_prompt
 )
-from bullyrag.utils import calculate_edit_distance, default_decode_ast_prompting, ast_checker, save_json
+from bullyrag.utils import (
+    calculate_edit_distance, calculate_cosine_similarity, 
+    default_decode_ast_prompting, ast_checker, save_json
+)
 
 ATTACKSUCCESSFULLY = "ATTACKSUCCESSFULLY"
 ANSWERCORRECTLY = "ANSWERCORRECTLY"
@@ -118,8 +123,87 @@ class BaseEvaluator(abc.ABC):
         pass
 
 class RetrievalEvaluator(BaseEvaluator):
-    def __init__(self):
-        pass
+    def __call__(self):
+        evaluation_metrics = {
+            "original_doc_question_similarity_list": [],
+            "attackwise_obfuscated_doc_question_similarity_map": collections.defaultdict(list),
+            "attackwise_average_similarity_change_map": collections.defaultdict(list),
+            "attackwise_total_obfuscation_ratio_list": collections.defaultdict(list),
+            "attackwise_replayinfo_map": collections.defaultdict(dict)
+
+        }
+        print(f"Start to evaluate!!!")
+        start_time = time.time()
+        self._evaluate(evaluation_metrics)
+        end_time = time.time()
+        print(f"Finish evaluation. The total time: {end_time:.2f}")
+
+        if self.path_to_evaluation_result is not None:
+            print(f"Start to dump evaluation result in '{self.path_to_evaluation_result}'")
+            save_json(evaluation_metrics, self.path_to_evaluation_result)
+        return evaluation_metrics
+
+    def _evaluate(self, evaluation_metrics: dict):
+        start_time = time.time()
+        print(f"Start to prepare embedding cache!")
+        sentence_to_embedding_cache = {}
+        all_sentence_set = set()
+        attacker_to_obfuscated_doc_map = {}
+        for data_index, (doc, qa_data, kwargs) in enumerate(self.data_processor):
+            for attacker in self.attackers:
+                attacker_name = attacker.__class__.__name__
+                obfuscated_doc = kwargs.get(attacker_name, {}).get("obfuscated_doc", None)
+                if obfuscated_doc is None:
+                    obfuscated_doc = attacker.obfuscate_reference_doc(
+                        doc=doc,
+                        gt_answers=qa_data["gt_answer"],
+                        malicious_answers=qa_data["malicious_answer"],
+                        **kwargs
+                    )
+
+                # First, we gather all the sentences and then convert them to embeddings for higher throughput.
+                attacker_to_obfuscated_doc_map[f"{qa_data['question']}{attacker_name}{doc}"] = obfuscated_doc
+                all_sentence_set.update([qa_data["question"], doc, obfuscated_doc])
+        all_sentence_list = list(all_sentence_set)
+        all_sentnece_embeddings = self.inferencer.infer_embedding_response(all_sentence_list)
+        for sentence, sentence_embedding in zip(all_sentence_list, all_sentnece_embeddings):
+            sentence_to_embedding_cache[sentence] = sentence_embedding
+        end_time = time.time()
+        print(f"Complete the preparation of the embedding cache! Time: {end_time - start_time:.2f}")
+
+        for data_index, (doc, qa_data, kwargs) in enumerate(self.data_processor):
+            doc_embedding = sentence_to_embedding_cache[doc]
+            question_embedding = sentence_to_embedding_cache[qa_data["question"]]
+            original_cosine_similarity_list = calculate_cosine_similarity(
+                [question_embedding], [doc_embedding]
+            )
+            evaluation_metrics["original_doc_question_similarity_list"].append(
+                original_cosine_similarity_list[0]
+            )
+            for attacker in self.attackers:
+                attacker_name = attacker.__class__.__name__
+                obfuscated_doc = attacker_to_obfuscated_doc_map[f"{qa_data['question']}{attacker_name}{doc}"]
+
+                obfuscated_doc_embedding = sentence_to_embedding_cache[obfuscated_doc]
+
+                obfuscated_cosine_similarity_list = calculate_cosine_similarity(
+                    [question_embedding],
+                    [obfuscated_doc_embedding]
+                )
+                similarity_change = original_cosine_similarity_list[0] - obfuscated_cosine_similarity_list[0]
+                # Calculate obfuscated ratio (i.e., the edit distance between 
+                # the original response and obfuscated response)
+                edit_distance_ratio = calculate_edit_distance(doc, obfuscated_doc)
+
+                attacker_name = attacker.__class__.__name__
+                evaluation_metrics["attackwise_obfuscated_doc_question_similarity_map"][attacker_name].append(
+                    obfuscated_cosine_similarity_list[0]
+                )
+                evaluation_metrics["attackwise_average_similarity_change_map"][attacker_name].append(similarity_change)
+                evaluation_metrics["attackwise_total_obfuscation_ratio_list"][attacker_name].append(edit_distance_ratio)
+                if self.enable_replaylogging:
+                    key = f"{qa_data['question']}_{qa_data['gt_answer']}"
+                    evaluation_metrics["attackwise_replayinfo_map"][attacker_name][key] = obfuscated_doc
 
 class ChatEvaluator(BaseEvaluator):
     DEFAULT_RAG_PROMPT_MAP = {
@@ -280,7 +364,7 @@ class WrongAnswerEvaluator(ChatEvaluator):
                     doc_list=[obfuscated_doc, doc] if obfuscated_doc != doc else [doc],
                     question=qa_data["question"]
                 )
-                response = self.inferencer.inference(rag_messages)
+                response = self.inferencer.infer_chat_response(rag_messages)
                 answer_status = self.check_answer_correctness(
                     response, qa_data["gt_answer"], qa_data["malicious_answer"], doc=doc
                 )
@@ -325,7 +409,7 @@ class FunctionalCallingGenerationEvaluator(ChatEvaluator):
                     doc_list=[obfuscated_doc],
                     question=qa_data["question"]
                 )
-                raw_response = self.inferencer.inference(rag_messages)
+                raw_response = self.inferencer.infer_chat_response(rag_messages)
                 pred_answer = self._extract_inference_result(raw_response)
 
                 answer_status = self.check_answer_correctness(

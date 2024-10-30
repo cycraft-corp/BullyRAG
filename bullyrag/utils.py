@@ -5,6 +5,9 @@ import re
 import Levenshtein
 import ujson
 
+import torch
+import torch.nn.functional as F
+
 def load_json(data_path):
     with open(data_path, "r", encoding="utf-8-sig") as f:
         data = ujson.load(f)
@@ -23,6 +26,20 @@ def load_line_json(data_path, ignore_first_row=False):
 def save_json(data, data_path):
     with open(data_path, "w") as f:
         ujson.dump(data, f, indent=2, ensure_ascii=False)
+
+def calculate_cosine_similarity(query_embedding_list, key_embedding_list):
+    if not isinstance(query_embedding_list, torch.Tensor):
+        query_embedding_list = torch.tensor(query_embedding_list)
+    if not isinstance(key_embedding_list, torch.Tensor):
+        key_embedding_list = torch.tensor(key_embedding_list)
+
+    if len(query_embedding_list.shape) == 1:
+        query_embedding_list = query_embedding_list.unsqueeze(0)
+    if len(key_embedding_list.shape) == 1:
+        key_embedding_list = key_embedding_list.unsqueeze(0)
+
+    cosine_similarity = F.cosine_similarity(query_embedding_list, key_embedding_list)
+    return cosine_similarity.tolist()
 
 def calculate_edit_distance(doc1, doc2):
     if doc1 == doc2:
