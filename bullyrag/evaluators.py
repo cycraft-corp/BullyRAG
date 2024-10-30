@@ -106,7 +106,7 @@ class BaseEvaluator(abc.ABC):
         for attacker in attackers:
             if isinstance(attacker, str):
                 processed_attackers.append(get_attacker_class(attacker)())
-            elif isinstance(attacker, object): # modified attack -> attacker
+            elif isinstance(attacker, object):
                 processed_attackers.append(attacker)
             else:
                 raise ValueError(f"Argument 'attackers' only supports types "
@@ -153,7 +153,7 @@ class ChatEvaluator(BaseEvaluator):
         self._evaluate(rag_prompt_fn, evaluation_metrics)
         end_time = time.time()
         print(f"Finish evaluation. The total time: {end_time:.2f}")
-        evaluation_metrics["answer_status_percentage"] = self.calculate_percentage(evaluation_metrics)
+        evaluation_metrics["answer_status_percentage"] = self.calculate_answer_status_percentage(evaluation_metrics)
 
         if self.path_to_evaluation_result is not None:
             print(f"Start to dump evaluation result in '{self.path_to_evaluation_result}'")
@@ -165,9 +165,10 @@ class ChatEvaluator(BaseEvaluator):
         pass
 
     @staticmethod
-    def calculate_percentage(evaluation_metrics):
+    def calculate_answer_status_percentage(evaluation_metrics):
         """
-        Calculates the percentage of correct, incorrect, and malicious responses.
+        Calculates the percentage of answer status: ATTACKSUCCESSFULLY, ANSWERCORRECTLY,
+        ANSWERVAGUELY, and ANSWERCHAOTICALLY.
         Returns a dictionary with the percentage breakdown.
         """
         correct_count = 0
