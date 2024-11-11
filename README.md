@@ -99,7 +99,7 @@ BullyRAG tests RAG frameworks' robustness across 8 different attacks:
   * LLM's self-generated context - A large body of research study models' tendencies to their self-generated context.
   * Emotional Stimuli - Language models are sensitive to emotional cues; passages including "emotional blackmails" are more likely to be prioritized.
   * Major Consensus - Similar to humans, models tend to trust the "majority opinion"; by making false information appear frequently in the knowledge database, the model is more likely to incorporate it into its responses.
-  * Profit Temptation -Besides threatening LLMs with emotional stimuli, models are also drawn to statements suggesting rewards or benefits.
+  * Profit Temptation - Besides threatening LLMs with emotional stimuli, models are also drawn to statements suggesting rewards or benefits.
 
 ### 1 Real-Time Updated QA Dataset and 1 Function-Calling API Benchmark
 
