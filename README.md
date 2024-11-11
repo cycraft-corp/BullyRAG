@@ -105,3 +105,14 @@ BullyRAG tests RAG frameworks' robustness across 8 different attacks:
 
 * Real-time QA Dataset: To ensure that the RAG framework lacks prior knowledge of the questions in the dataset, we provide a real-time, auto-updating dataset that continuously fetches and parses fresh abstracts from ArXiv, generating new QA pairs accordingly.
 * Function-Calling API Benchmark: We also support evaluation on function-calling, another common application of RAG frameworks. Using data from the [Berkeley Function Calling Leaderboard](https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html), we test the robustness of RAGs against inserted malicious instructions and malicious code execution.
+
+## Citations
+If you use BullyRAG, please cite our tool.
+```
+@software{chen2024bullyrag,
+  author = {Yen-Shan Chen, SianYao Huang, and ChengLin Yang},
+  title = {BullyRAG: A Multi-Perspective RAG Robustness Evaluation Framework},
+  url = {https://github.com/cycraft-corp/BullyRAG},
+  year = {2024}
+}
+```
