@@ -136,7 +136,7 @@ class RetrievalEvaluator(BaseEvaluator):
         start_time = time.time()
         self._evaluate(evaluation_metrics)
         end_time = time.time()
-        print(f"Finish evaluation. The total time: {end_time:.2f}")
+        print(f"Finish evaluation. The total time: {end_time-start_time:.2f}")
 
         if self.path_to_evaluation_result is not None:
             print(f"Start to dump evaluation result in '{self.path_to_evaluation_result}'")
@@ -341,8 +341,6 @@ class ChatEvaluator(BaseEvaluator):
 class InstructionInjectionEvaluator(ChatEvaluator):
     def _evaluate(self, rag_prompt_fn: Callable, evaluation_metrics: dict):
         for data_index, (doc, qa_data, kwargs) in enumerate(self.data_processor):
-            if data_index == 5:
-                break
             for attacker in self.attackers:
                 qa_data["malicious_answer"] = attacker.obfuscate_malicious_answers()
 
@@ -363,7 +361,6 @@ class InstructionInjectionEvaluator(ChatEvaluator):
                     question=qa_data["question"]
                 )
                 raw_response = self.inferencer.infer_chat_response(rag_messages)
-                print(raw_response)
 
                 answer_status = self.check_answer_correctness(
                     raw_response, qa_data["gt_answer"], qa_data["malicious_answer"], doc=doc
@@ -525,6 +522,8 @@ class BFCLFCGEnerationEvaluator(FunctionalCallingGenerationEvaluator):
         # Handle escape character of the https://
         pred_answer_string = pred_answer_string.replace("\\/", "/")
         if re.search(regex_pattern, pred_answer_string):
+            print("!!!!!Attack Success!!!!!")
+            print(f"The response from LLM in generation phase: {pred_answer_string}")
             return ATTACKSUCCESSFULLY
 
         doc = ujson.loads(doc)
