@@ -1,5 +1,5 @@
 import argparse
-
+import json
 
 from bullyrag.inferencers import OpenAIInferencer
 
@@ -44,5 +44,10 @@ if __name__ == "__main__":
 
     parsed_paper_list = parse_arxiv_data(args.start_date, args.end_date, limit_num=args.limit_num)
 
-    print(parsed_paper_list)
-    print("-----")
+    with open(f'../../sample_data/parsed_paper_list_{args.start_date}_to{args.end_date}.json', 'w') as f:
+        json.dump(parsed_paper_list, f, indent=4)
+
+    synthesized_qa_list = synthesizer.get_qa_synthesis_prompt(parsed_paper_list, 3, "English (en)")
+
+    with open(f'../../sample_data/synthesized_qa_list_{args.start_date}_to{args.end_date}.json', 'w') as f:
+        json.dump(synthesized_qa_list, f, indent=4)
