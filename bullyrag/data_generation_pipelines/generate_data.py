@@ -7,6 +7,8 @@ from .data_fetchers import parse_arxiv_data
 from .qa_synthesizer import QASynthesizer
 
 MODEL = "gpt-4o-mini"
+BASE_URL = "[YOUR BASE URL]"
+API_KEY = "[YOUR API KEY]"
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fetch and parse ArXiv data for QA synthesis.")
@@ -38,8 +40,8 @@ if __name__ == "__main__":
     
     synthesizer = QASynthesizer(
         model=MODEL,
-        base_url="--",
-        api_key="--"
+        base_url=BASE_URL,
+        api_key=API_KEY
     )
 
     parsed_paper_list = parse_arxiv_data(args.start_date, args.end_date, limit_num=args.limit_num)
